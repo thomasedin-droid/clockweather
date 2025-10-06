@@ -1,7 +1,7 @@
 {
   "id": "clockweather",
   "title": "Clock & Weather",
-  "description": "A clock and weather system for Foundry VTT with shift tracking and ambient light control",
+  "description": "<p>A clock and weather system for Foundry VTT with shift tracking and ambient light control</p>",
   "version": "1.0.0",
   "compatibility": {
     "minimum": "13",
@@ -9,25 +9,33 @@
   },
   "authors": [
     {
-      "name": "Thomas Edin"
+      "name": "Thomas Edin",
+      "flags": {}
     }
   ],
   "esmodules": [
     "scripts/clockweather.js"
   ],
   "styles": [
-    "templates/clockweather.css"
+    {
+      "src": "templates/clockweather.css"
+    }
   ],
   "languages": [
     {
       "lang": "en",
       "name": "English",
-      "path": "lang/en.json"
+      "path": "lang/en.json",
+      "flags": {}
     },
     {
       "lang": "sv",
       "name": "Svenska",
-      "path": "lang/sv.json"
+      "path": "lang/sv.json",
+      "flags": {}
     }
-  ]
+  ],
+  "url": "https://github.com/thomasedin-droid/clockweather",
+  "manifest": "https://github.com/thomasedin-droid/clockweather/blob/main/module.json",
+  "download": "https://github.com/thomasedin-droid/clockweather/blob/main/clockweather.zip"
 }
