@@ -1,0 +1,312 @@
+/* Build 7 */
+
+.clockweather-container {
+  padding: 8px;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+}
+
+.clockweather-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.clockweather-section {
+  padding: 8px;
+  background: var(--color-bg-secondary);
+  border-radius: 4px;
+  border: 1px solid var(--color-border-light);
+}
+
+.clockweather-section label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 3px;
+  color: var(--color-text-label);
+  font-size: 0.9em;
+}
+
+/* Datum och Tid sektion - sida vid sida */
+.datetime-section {
+  padding: 8px;
+}
+
+.datetime-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.datetime-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.date-input,
+.time-input {
+  width: 100%;
+  padding: 4px;
+  border: 1px solid var(--color-border-dark);
+  border-radius: 3px;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-size: 0.95em;
+}
+
+.date-display,
+.time-display {
+  padding: 4px;
+  background: var(--color-bg-primary);
+  border-radius: 3px;
+  border: 1px solid var(--color-border-light);
+  text-align: center;
+  font-weight: bold;
+  font-size: 0.95em;
+}
+
+.shift-display {
+  padding: 6px;
+  background: var(--color-bg-option);
+  border-radius: 3px;
+  text-align: center;
+  margin-bottom: 6px;
+  font-size: 0.9em;
+}
+
+.shift-label {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.shift-value {
+  color: var(--color-text-hyperlink);
+}
+
+.time-controls {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+
+.time-controls button {
+  flex: 1;
+  padding: 5px 8px;
+  border: 1px solid var(--color-border-dark);
+  border-radius: 3px;
+  background: var(--color-bg-btn);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.85em;
+}
+
+.time-controls button:hover {
+  background: var(--color-bg-btn-hover);
+  border-color: var(--color-border-highlight);
+}
+
+.time-controls button i {
+  margin-right: 2px;
+}
+
+/* Höjd kontroll */
+.altitude-control {
+  margin-bottom: 8px;
+  padding: 6px;
+  background: var(--color-bg-primary);
+  border-radius: 3px;
+  border: 1px solid var(--color-border-light);
+}
+
+.altitude-control label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+  font-size: 0.85em;
+}
+
+.altitude-value {
+  color: var(--color-text-hyperlink);
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.altitude-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--color-bg-option);
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.altitude-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-text-hyperlink);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.altitude-slider::-webkit-slider-thumb:hover {
+  background: var(--color-border-highlight);
+  transform: scale(1.2);
+}
+
+.altitude-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-text-hyperlink);
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.altitude-slider::-moz-range-thumb:hover {
+  background: var(--color-border-highlight);
+  transform: scale(1.2);
+}
+
+/* Väder grid layout */
+.weather-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.weather-item {
+  display: flex;
+  align-items: center;
+  padding: 6px;
+  background: var(--color-bg-primary);
+  border-radius: 3px;
+  border: 1px solid var(--color-border-light);
+  gap: 8px;
+}
+
+.weather-icon {
+  font-size: 1.2em;
+  color: var(--color-text-hyperlink);
+  min-width: 20px;
+  text-align: center;
+}
+
+.weather-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.weather-label {
+  font-size: 0.75em;
+  color: var(--color-text-dark-secondary);
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.weather-value {
+  font-size: 0.9em;
+  color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Knappar */
+.button-section {
+  display: flex;
+  gap: 8px;
+  padding: 6px 8px;
+}
+
+.button-section button {
+  flex: 1;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.button-section button.compact {
+  padding: 6px 10px;
+}
+
+.post-to-chat {
+  background: #1976d2;
+  color: white;
+}
+
+.post-to-chat:hover {
+  background: #1565c0;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.save-datetime {
+  background: #2e7d32;
+  color: white;
+}
+
+.save-datetime:hover {
+  background: #1b5e20;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.save-datetime i,
+.post-to-chat i {
+  margin-right: 4px;
+}
+
+/* Chat message styling */
+.clockweather-chat-message {
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  border-left: 4px solid #4a90e2;
+}
+
+.clockweather-chat-message h3 {
+  margin: 0 0 10px 0;
+  color: #4a90e2;
+  font-size: 1.2em;
+}
+
+.clockweather-chat-message p {
+  margin: 5px 0;
+}
+
+.clockweather-chat-message hr {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 10px 0;
+}
+
+/* Responsivitet */
+@media (max-width: 500px) {
+  .datetime-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .weather-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .time-controls {
+    flex-direction: column;
+  }
+  
+  .button-section {
+    flex-direction: column;
+  }
+}

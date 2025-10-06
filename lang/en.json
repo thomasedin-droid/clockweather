@@ -1,0 +1,71 @@
+{
+  "CLOCKWEATHER": {
+    "Title": "Clock & Weather",
+    "Open": "Open Clock & Weather",
+    "Date": "Date",
+    "Time": "Time",
+    "CurrentShift": "Current Shift",
+    "Weather": "Weather",
+    "Conditions": "Conditions",
+    "Wind": "Wind",
+    "Temperature": "Temperature",
+    "FeelsLike": "Feels Like",
+    "Altitude": "Altitude",
+    "PostToChat": "Post to Chat",
+    "PostedToChat": "Weather posted to chat!",
+    "Save": "Save Date & Time",
+    "Saved": "Date and time saved successfully!",
+    "WeatherLoaded": "Weather data loaded successfully!",
+    "Forward1h": "Advance 1 hour",
+    "Forward4h": "Advance 4 hours (1 shift)",
+    "Backwards4h": "Go back 4 hours (1 shift)",
+    "NoData": "No weather data available",
+    "ErrorLoadingWeather": "Error loading weather data file",
+    
+    "Shift1": "Night Shift (00:00-04:00)",
+    "Shift2": "Dawn Shift (04:00-08:00)",
+    "Shift3": "Morning Shift (08:00-12:00)",
+    "Shift4": "Afternoon Shift (12:00-16:00)",
+    "Shift5": "Evening Shift (16:00-20:00)",
+    "Shift6": "Dusk Shift (20:00-24:00)",
+    
+    "Weathertype": {
+      "clear_sky": "Clear Sky",
+      "partly_cloudy": "Partly Cloudy",
+      "cloudy": "Cloudy",
+      "overcast": "Overcast",
+      "light_rain": "Light Rain",
+      "rain": "Rain",
+      "heavy_rain": "Heavy Rain",
+      "thunderstorm": "Thunderstorm",
+      "snow": "Snow",
+      "fog": "Fog",
+      "mist": "Mist"
+    },
+    
+    "Windtype": {
+      "calm": "Calm",
+      "light_air": "Light Air",
+      "light_breeze": "Light Breeze",
+      "gentle_breeze": "Gentle Breeze",
+      "moderate_breeze": "Moderate Breeze",
+      "fresh_breeze": "Fresh Breeze",
+      "strong_breeze": "Strong Breeze",
+      "near_gale": "Near Gale",
+      "gale": "Gale",
+      "strong_gale": "Strong Gale",
+      "storm": "Storm",
+      "violent_storm": "Violent Storm",
+      "hurricane": "Hurricane"
+    },
+    
+    "Settings": {
+      "ControlLight": "Control Ambient Light",
+      "ControlLightHint": "Automatically adjust scene darkness based on time of day",
+      "WeatherFile": "Weather Data File",
+      "WeatherFileHint": "Select the weather data JSON file to use (must be in weatherdata folder)",
+      "Altitude": "Altitude Above Sea Level (meters)",
+      "AltitudeHint": "Adjust temperature by altitude (0-3900m in 150m steps, -1°C per 150m)"
+    }
+  }
+}

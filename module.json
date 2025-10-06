@@ -1,0 +1,33 @@
+{
+  "id": "clockweather",
+  "title": "Clock & Weather",
+  "description": "A clock and weather system for Foundry VTT with shift tracking and ambient light control",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "authors": [
+    {
+      "name": "Thomas Edin"
+    }
+  ],
+  "esmodules": [
+    "scripts/clockweather.js"
+  ],
+  "styles": [
+    "templates/clockweather.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    },
+    {
+      "lang": "sv",
+      "name": "Svenska",
+      "path": "lang/sv.json"
+    }
+  ]
+}

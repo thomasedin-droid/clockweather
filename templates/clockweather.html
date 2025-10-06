@@ -1,0 +1,104 @@
+<!-- Build 005 -->
+
+<div class="clockweather-container">
+  <div class="clockweather-content">
+    <!-- Datum och Tid sektion - sida vid sida -->
+    <div class="clockweather-section datetime-section">
+      <div class="datetime-row">
+        <div class="datetime-col">
+          <label for="date-input">{{localize "CLOCKWEATHER.Date"}}</label>
+          {{#if isGM}}
+            <input type="date" class="date-input" value="{{date}}">
+          {{else}}
+            <div class="date-display">{{date}}</div>
+          {{/if}}
+        </div>
+        
+        <div class="datetime-col">
+          <label for="time-input">{{localize "CLOCKWEATHER.Time"}}</label>
+          {{#if isGM}}
+            <input type="time" class="time-input" value="{{time}}">
+          {{else}}
+            <div class="time-display">{{time}}</div>
+          {{/if}}
+        </div>
+      </div>
+      
+      <div class="shift-display">
+        <span class="shift-label">{{localize "CLOCKWEATHER.CurrentShift"}}:</span>
+        <span class="shift-value">{{shift}}</span>
+      </div>
+
+      {{#if isGM}}
+        <div class="time-controls">
+          <button class="time-advance compact" data-hours="-4" title="{{localize 'CLOCKWEATHER.Backwards4h'}}">
+            <i class="fas fa-backward"></i> -4h
+          </button>
+          <button class="time-advance compact" data-hours="4" title="{{localize 'CLOCKWEATHER.Forward4h'}}">
+            <i class="fas fa-forward"></i> +4h
+          </button>
+          <button class="time-advance compact" data-hours="1" title="{{localize 'CLOCKWEATHER.Forward1h'}}">
+            <i class="fas fa-step-forward"></i> +1h
+          </button>
+        </div>
+      {{/if}}
+    </div>
+
+    <!-- Väder sektion -->
+    <div class="clockweather-section weather-section">
+      {{#if isGM}}
+        <div class="altitude-control">
+          <label for="altitude-input">
+            {{localize "CLOCKWEATHER.Altitude"}}: <span class="altitude-value">{{altitude}}m</span>
+          </label>
+          <input type="range" class="altitude-slider" value="{{altitude}}" min="0" max="3900" step="150">
+        </div>
+      {{/if}}
+      
+      <div class="weather-grid">
+        <div class="weather-item">
+          <i class="fas fa-cloud weather-icon"></i>
+          <div class="weather-content">
+            <span class="weather-label">{{localize "CLOCKWEATHER.Conditions"}}</span>
+            <span class="weather-value">{{weather.weatherCode}}</span>
+          </div>
+        </div>
+        
+        <div class="weather-item">
+          <i class="fas fa-wind weather-icon"></i>
+          <div class="weather-content">
+            <span class="weather-label">{{localize "CLOCKWEATHER.Wind"}}</span>
+            <span class="weather-value">{{weather.windCode}} ({{weather.windspeed}} m/s)</span>
+          </div>
+        </div>
+        
+        <div class="weather-item">
+          <i class="fas fa-thermometer-half weather-icon"></i>
+          <div class="weather-content">
+            <span class="weather-label">{{localize "CLOCKWEATHER.Temperature"}}</span>
+            <span class="weather-value">{{weather.temp}}°C</span>
+          </div>
+        </div>
+        
+        <div class="weather-item">
+          <i class="fas fa-thermometer-three-quarters weather-icon"></i>
+          <div class="weather-content">
+            <span class="weather-label">{{localize "CLOCKWEATHER.FeelsLike"}}</span>
+            <span class="weather-value">{{weather.feelsLike}}°C</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{#if isGM}}
+      <div class="clockweather-section button-section">
+        <button class="post-to-chat compact">
+          <i class="fas fa-comment"></i> {{localize "CLOCKWEATHER.PostToChat"}}
+        </button>
+        <button class="save-datetime compact">
+          <i class="fas fa-save"></i> {{localize "CLOCKWEATHER.Save"}}
+        </button>
+      </div>
+    {{/if}}
+  </div>
+</div>
