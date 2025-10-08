@@ -2,7 +2,7 @@
   "id": "clockweather",
   "title": "Clock & Weather",
   "description": "A clock and weather system for Foundry VTT with shift tracking and ambient light control",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "compatibility": {
     "minimum": "13",
     "verified": "13"
@@ -36,6 +36,7 @@
     }
   ],
   "url": "https://github.com/thomasedin-droid/clockweather",
-  "manifest": "https://github.com/thomasedin-droid/clockweather/blob/main/module.json",
-  "download": "https://github.com/thomasedin-droid/clockweather/blob/main/clockweather.zip"
+  "manifest": "https://github.com/thomasedin-droid/clockweather/releases/download/1.2.0/module.json",
+  "download": "https://github.com/thomasedin-droid/clockweather/releases/download/1.2.0/clockweather.zip",
+  "flags": {}
 }
