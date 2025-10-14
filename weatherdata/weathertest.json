@@ -1,0 +1,158 @@
+{
+  "2014-06-14": {
+    "shifts": [
+      {
+        "shift": 1,
+        "weatherCode": "snow",
+        "windCode": "near_gale",
+        "windDirection": "NW",
+        "windspeed": 19,
+        "temp": -18
+      },
+      {
+        "shift": 2,
+        "weatherCode": "snow",
+        "windCode": "fresh_breeze",
+        "windDirection": "N",
+        "windspeed": 15,
+        "temp": -15
+      },
+      {
+        "shift": 3,
+        "weatherCode": "overcast",
+        "windCode": "moderate_breeze",
+        "windDirection": "NE",
+        "windspeed": 12,
+        "temp": -10
+      },
+      {
+        "shift": 4,
+        "weatherCode": "fog",
+        "windCode": "moderate_breeze",
+        "windDirection": "E",
+        "windspeed": 10,
+        "temp": -7
+      },
+      {
+        "shift": 5,
+        "weatherCode": "snow",
+        "windCode": "fresh_breeze",
+        "windDirection": "NE",
+        "windspeed": 14,
+        "temp": -9
+      },
+      {
+        "shift": 6,
+        "weatherCode": "snow",
+        "windCode": "strong_breeze",
+        "windDirection": "N",
+        "windspeed": 16,
+        "temp": -13
+      }
+    ]
+  },
+  "2014-06-15": {
+    "shifts": [
+      {
+        "shift": 1,
+        "weatherCode": "heavy_snow",
+        "windCode": "gale",
+        "windDirection": "NW",
+        "windspeed": 22,
+        "temp": -20
+      },
+      {
+        "shift": 2,
+        "weatherCode": "blizzard",
+        "windCode": "strong_gale",
+        "windDirection": "NW",
+        "windspeed": 25,
+        "temp": -22
+      },
+      {
+        "shift": 3,
+        "weatherCode": "heavy_snow",
+        "windCode": "gale",
+        "windDirection": "N",
+        "windspeed": 20,
+        "temp": -18
+      },
+      {
+        "shift": 4,
+        "weatherCode": "snow",
+        "windCode": "strong_breeze",
+        "windDirection": "N",
+        "windspeed": 16,
+        "temp": -15
+      },
+      {
+        "shift": 5,
+        "weatherCode": "light_snow",
+        "windCode": "fresh_breeze",
+        "windDirection": "NE",
+        "windspeed": 13,
+        "temp": -12
+      },
+      {
+        "shift": 6,
+        "weatherCode": "overcast",
+        "windCode": "moderate_breeze",
+        "windDirection": "E",
+        "windspeed": 10,
+        "temp": -10
+      }
+    ]
+  },
+  "2014-06-16": {
+    "shifts": [
+      {
+        "shift": 1,
+        "weatherCode": "partly_cloudy",
+        "windCode": "light_breeze",
+        "windDirection": "SE",
+        "windspeed": 5,
+        "temp": -8
+      },
+      {
+        "shift": 2,
+        "weatherCode": "clear_sky",
+        "windCode": "light_air",
+        "windDirection": "S",
+        "windspeed": 3,
+        "temp": -5
+      },
+      {
+        "shift": 3,
+        "weatherCode": "clear_sky",
+        "windCode": "light_breeze",
+        "windDirection": "SW",
+        "windspeed": 4,
+        "temp": -2
+      },
+      {
+        "shift": 4,
+        "weatherCode": "partly_cloudy",
+        "windCode": "gentle_breeze",
+        "windDirection": "SW",
+        "windspeed": 7,
+        "temp": 0
+      },
+      {
+        "shift": 5,
+        "weatherCode": "cloudy",
+        "windCode": "moderate_breeze",
+        "windDirection": "W",
+        "windspeed": 9,
+        "temp": -2
+      },
+      {
+        "shift": 6,
+        "weatherCode": "overcast",
+        "windCode": "moderate_breeze",
+        "windDirection": "W",
+        "windspeed": 11,
+        "temp": -4
+      }
+    ]
+  }
+}

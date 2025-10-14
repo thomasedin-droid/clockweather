@@ -1,4 +1,4 @@
-<!-- Build 005 -->
+<!-- Build 006 - Added wind direction, visibility, and FXMaster toggle -->
 
 <div class="clockweather-container">
   <div class="clockweather-content">
@@ -68,7 +68,9 @@
           <i class="fas fa-wind weather-icon"></i>
           <div class="weather-content">
             <span class="weather-label">{{localize "CLOCKWEATHER.Wind"}}</span>
-            <span class="weather-value">{{weather.windCode}} ({{weather.windspeed}} m/s)</span>
+            <span class="weather-value">
+              {{weather.windCode}} - {{weather.windDirection}} - ({{weather.windspeed}} m/s)
+            </span>
           </div>
         </div>
         
@@ -87,6 +89,14 @@
             <span class="weather-value">{{weather.feelsLike}}°C</span>
           </div>
         </div>
+
+        <div class="weather-item">
+          <i class="fas fa-eye weather-icon"></i>
+          <div class="weather-content">
+            <span class="weather-label">{{localize "CLOCKWEATHER.Visibility.Title"}}</span>
+            <span class="weather-value">{{weather.visibilityText}} ({{weather.visibility}}m)</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -95,6 +105,11 @@
         <button class="post-to-chat compact">
           <i class="fas fa-comment"></i> {{localize "CLOCKWEATHER.PostToChat"}}
         </button>
+        {{#if fxMasterEnabled}}
+          <button class="toggle-fx compact" title="{{localize 'CLOCKWEATHER.ToggleWeatherFX'}}">
+            <i class="fas fa-sparkles"></i> {{localize "CLOCKWEATHER.ToggleWeatherFX"}}
+          </button>
+        {{/if}}
         <button class="save-datetime compact">
           <i class="fas fa-save"></i> {{localize "CLOCKWEATHER.Save"}}
         </button>

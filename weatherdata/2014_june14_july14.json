@@ -1,312 +1,262 @@
 {
   "2014-06-14": {
     "shifts": [
-      {"shift": 1, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 19, "temp": -18},
-      {"shift": 2, "weatherCode": "snow", "windCode": "fresh_breeze", "windspeed": 15, "temp": -15},
-      {"shift": 3, "weatherCode": "overcast", "windCode": "moderate_breeze", "windspeed": 12, "temp": -10},
-      {"shift": 4, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 10, "temp": -7},
-      {"shift": 5, "weatherCode": "snow", "windCode": "fresh_breeze", "windspeed": 14, "temp": -9},
-      {"shift": 6, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 16, "temp": -13}
+      {"shift": 1, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "NW", "windspeed": 19, "temp": -18},
+      {"shift": 2, "weatherCode": "snow", "windCode": "fresh_breeze", "windDirection": "NW", "windspeed": 15, "temp": -15},
+      {"shift": 3, "weatherCode": "overcast", "windCode": "moderate_breeze", "windDirection": "N", "windspeed": 12, "temp": -10},
+      {"shift": 4, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "N", "windspeed": 10, "temp": -7},
+      {"shift": 5, "weatherCode": "snow", "windCode": "fresh_breeze", "windDirection": "NE", "windspeed": 14, "temp": -9},
+      {"shift": 6, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "N", "windspeed": 16, "temp": -13}
     ]
   },
   "2014-06-15": {
     "shifts": [
-      {"shift": 1, "weatherCode": "heavy_rain", "windCode": "gale", "windspeed": 22, "temp": -20},
-      {"shift": 2, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 19, "temp": -17},
-      {"shift": 3, "weatherCode": "snow", "windCode": "fresh_breeze", "windspeed": 15, "temp": -12},
-      {"shift": 4, "weatherCode": "cloudy", "windCode": "moderate_breeze", "windspeed": 11, "temp": -8},
-      {"shift": 5, "weatherCode": "fog", "windCode": "fresh_breeze", "windspeed": 13, "temp": -10},
-      {"shift": 6, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 18, "temp": -15}
+      {"shift": 1, "weatherCode": "heavy_rain", "windCode": "gale", "windDirection": "W", "windspeed": 22, "temp": -20},
+      {"shift": 2, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "NW", "windspeed": 19, "temp": -17},
+      {"shift": 3, "weatherCode": "snow", "windCode": "fresh_breeze", "windDirection": "NW", "windspeed": 15, "temp": -12},
+      {"shift": 4, "weatherCode": "cloudy", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 11, "temp": -8},
+      {"shift": 5, "weatherCode": "fog", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 13, "temp": -10},
+      {"shift": 6, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "NW", "windspeed": 18, "temp": -15}
     ]
   },
   "2014-06-16": {
     "shifts": [
-      {"shift": 1, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 17, "temp": -22},
-      {"shift": 2, "weatherCode": "snow", "windCode": "fresh_breeze", "windspeed": 14, "temp": -19},
-      {"shift": 3, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 11, "temp": -14},
-      {"shift": 4, "weatherCode": "overcast", "windCode": "gentle_breeze", "windspeed": 8, "temp": -10},
-      {"shift": 5, "weatherCode": "cloudy", "windCode": "moderate_breeze", "windspeed": 10, "temp": -12},
-      {"shift": 6, "weatherCode": "snow", "windCode": "fresh_breeze", "windspeed": 15, "temp": -17}
+      {"shift": 1, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "N", "windspeed": 17, "temp": -22},
+      {"shift": 2, "weatherCode": "snow", "windCode": "fresh_breeze", "windDirection": "N", "windspeed": 14, "temp": -19},
+      {"shift": 3, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "NE", "windspeed": 11, "temp": -14},
+      {"shift": 4, "weatherCode": "overcast", "windCode": "gentle_breeze", "windDirection": "E", "windspeed": 8, "temp": -10},
+      {"shift": 5, "weatherCode": "cloudy", "windCode": "moderate_breeze", "windDirection": "E", "windspeed": 10, "temp": -12},
+      {"shift": 6, "weatherCode": "snow", "windCode": "fresh_breeze", "windDirection": "NE", "windspeed": 15, "temp": -17}
     ]
   },
   "2014-06-17": {
     "shifts": [
-      {"shift": 1, "weatherCode": "snow", "windCode": "gale", "windspeed": 23, "temp": -24},
-      {"shift": 2, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 20, "temp": -21},
-      {"shift": 3, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 16, "temp": -16},
-      {"shift": 4, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 12, "temp": -12},
-      {"shift": 5, "weatherCode": "overcast", "windCode": "fresh_breeze", "windspeed": 14, "temp": -14},
-      {"shift": 6, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 19, "temp": -19}
+      {"shift": 1, "weatherCode": "snow", "windCode": "gale", "windDirection": "N", "windspeed": 23, "temp": -24},
+      {"shift": 2, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "N", "windspeed": 20, "temp": -21},
+      {"shift": 3, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "N", "windspeed": 16, "temp": -16},
+      {"shift": 4, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "NE", "windspeed": 12, "temp": -12},
+      {"shift": 5, "weatherCode": "overcast", "windCode": "fresh_breeze", "windDirection": "NE", "windspeed": 14, "temp": -14},
+      {"shift": 6, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "N", "windspeed": 19, "temp": -19}
     ]
   },
   "2014-06-18": {
     "shifts": [
-      {"shift": 1, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 11, "temp": -19},
-      {"shift": 2, "weatherCode": "cloudy", "windCode": "gentle_breeze", "windspeed": 9, "temp": -16},
-      {"shift": 3, "weatherCode": "overcast", "windCode": "gentle_breeze", "windspeed": 7, "temp": -11},
-      {"shift": 4, "weatherCode": "cloudy", "windCode": "light_breeze", "windspeed": 6, "temp": -7},
-      {"shift": 5, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 10, "temp": -9},
-      {"shift": 6, "weatherCode": "snow", "windCode": "fresh_breeze", "windspeed": 13, "temp": -14}
+      {"shift": 1, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "E", "windspeed": 11, "temp": -19},
+      {"shift": 2, "weatherCode": "cloudy", "windCode": "gentle_breeze", "windDirection": "E", "windspeed": 9, "temp": -16},
+      {"shift": 3, "weatherCode": "overcast", "windCode": "gentle_breeze", "windDirection": "SE", "windspeed": 7, "temp": -11},
+      {"shift": 4, "weatherCode": "cloudy", "windCode": "light_breeze", "windDirection": "SE", "windspeed": 6, "temp": -7},
+      {"shift": 5, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "E", "windspeed": 10, "temp": -9},
+      {"shift": 6, "weatherCode": "snow", "windCode": "fresh_breeze", "windDirection": "NE", "windspeed": 13, "temp": -14}
     ]
   },
   "2014-06-19": {
     "shifts": [
-      {"shift": 1, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 18, "temp": -21},
-      {"shift": 2, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 16, "temp": -18},
-      {"shift": 3, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 12, "temp": -13},
-      {"shift": 4, "weatherCode": "overcast", "windCode": "moderate_breeze", "windspeed": 10, "temp": -9},
-      {"shift": 5, "weatherCode": "cloudy", "windCode": "fresh_breeze", "windspeed": 13, "temp": -11},
-      {"shift": 6, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 17, "temp": -16}
+      {"shift": 1, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "NW", "windspeed": 18, "temp": -21},
+      {"shift": 2, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "NW", "windspeed": 16, "temp": -18},
+      {"shift": 3, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 12, "temp": -13},
+      {"shift": 4, "weatherCode": "overcast", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 10, "temp": -9},
+      {"shift": 5, "weatherCode": "cloudy", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 13, "temp": -11},
+      {"shift": 6, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "NW", "windspeed": 17, "temp": -16}
     ]
   },
   "2014-06-20": {
     "shifts": [
-      {"shift": 1, "weatherCode": "overcast", "windCode": "fresh_breeze", "windspeed": 14, "temp": -17},
-      {"shift": 2, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 11, "temp": -14},
-      {"shift": 3, "weatherCode": "cloudy", "windCode": "gentle_breeze", "windspeed": 8, "temp": -9},
-      {"shift": 4, "weatherCode": "partly_cloudy", "windCode": "gentle_breeze", "windspeed": 7, "temp": -5},
-      {"shift": 5, "weatherCode": "cloudy", "windCode": "moderate_breeze", "windspeed": 9, "temp": -7},
-      {"shift": 6, "weatherCode": "fog", "windCode": "fresh_breeze", "windspeed": 12, "temp": -12}
+      {"shift": 1, "weatherCode": "overcast", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 14, "temp": -17},
+      {"shift": 2, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 11, "temp": -14},
+      {"shift": 3, "weatherCode": "cloudy", "windCode": "gentle_breeze", "windDirection": "SW", "windspeed": 8, "temp": -9},
+      {"shift": 4, "weatherCode": "partly_cloudy", "windCode": "gentle_breeze", "windDirection": "SW", "windspeed": 7, "temp": -5},
+      {"shift": 5, "weatherCode": "cloudy", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 9, "temp": -7},
+      {"shift": 6, "weatherCode": "fog", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 12, "temp": -12}
     ]
   },
   "2014-06-21": {
     "shifts": [
-      {"shift": 1, "weatherCode": "snow", "windCode": "gale", "windspeed": 24, "temp": -23},
-      {"shift": 2, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 21, "temp": -20},
-      {"shift": 3, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 17, "temp": -15},
-      {"shift": 4, "weatherCode": "fog", "windCode": "fresh_breeze", "windspeed": 13, "temp": -11},
-      {"shift": 5, "weatherCode": "overcast", "windCode": "strong_breeze", "windspeed": 16, "temp": -13},
-      {"shift": 6, "weatherCode": "snow", "windCode": "gale", "windspeed": 22, "temp": -18}
+      {"shift": 1, "weatherCode": "snow", "windCode": "gale", "windDirection": "N", "windspeed": 24, "temp": -23},
+      {"shift": 2, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "N", "windspeed": 21, "temp": -20},
+      {"shift": 3, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "N", "windspeed": 17, "temp": -15},
+      {"shift": 4, "weatherCode": "fog", "windCode": "fresh_breeze", "windDirection": "NE", "windspeed": 13, "temp": -11},
+      {"shift": 5, "weatherCode": "overcast", "windCode": "strong_breeze", "windDirection": "NE", "windspeed": 16, "temp": -13},
+      {"shift": 6, "weatherCode": "snow", "windCode": "gale", "windDirection": "N", "windspeed": 22, "temp": -18}
     ]
   },
   "2014-06-22": {
     "shifts": [
-      {"shift": 1, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 20, "temp": -25},
-      {"shift": 2, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 17, "temp": -22},
-      {"shift": 3, "weatherCode": "fog", "windCode": "fresh_breeze", "windspeed": 14, "temp": -17},
-      {"shift": 4, "weatherCode": "overcast", "windCode": "moderate_breeze", "windspeed": 11, "temp": -13},
-      {"shift": 5, "weatherCode": "snow", "windCode": "fresh_breeze", "windspeed": 15, "temp": -15},
-      {"shift": 6, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 19, "temp": -20}
+      {"shift": 1, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "NW", "windspeed": 20, "temp": -25},
+      {"shift": 2, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "NW", "windspeed": 17, "temp": -22},
+      {"shift": 3, "weatherCode": "fog", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 14, "temp": -17},
+      {"shift": 4, "weatherCode": "overcast", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 11, "temp": -13},
+      {"shift": 5, "weatherCode": "snow", "windCode": "fresh_breeze", "windDirection": "NW", "windspeed": 15, "temp": -15},
+      {"shift": 6, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "NW", "windspeed": 19, "temp": -20}
     ]
   },
   "2014-06-23": {
     "shifts": [
-      {"shift": 1, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 12, "temp": -20},
-      {"shift": 2, "weatherCode": "cloudy", "windCode": "gentle_breeze", "windspeed": 9, "temp": -17},
-      {"shift": 3, "weatherCode": "overcast", "windCode": "moderate_breeze", "windspeed": 10, "temp": -12},
-      {"shift": 4, "weatherCode": "cloudy", "windCode": "gentle_breeze", "windspeed": 8, "temp": -8},
-      {"shift": 5, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 11, "temp": -10},
-      {"shift": 6, "weatherCode": "overcast", "windCode": "fresh_breeze", "windspeed": 14, "temp": -15}
+      {"shift": 1, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 12, "temp": -20},
+      {"shift": 2, "weatherCode": "cloudy", "windCode": "gentle_breeze", "windDirection": "W", "windspeed": 9, "temp": -17},
+      {"shift": 3, "weatherCode": "overcast", "windCode": "moderate_breeze", "windDirection": "SW", "windspeed": 10, "temp": -12},
+      {"shift": 4, "weatherCode": "cloudy", "windCode": "gentle_breeze", "windDirection": "SW", "windspeed": 8, "temp": -8},
+      {"shift": 5, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 11, "temp": -10},
+      {"shift": 6, "weatherCode": "overcast", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 14, "temp": -15}
     ]
   },
   "2014-06-24": {
     "shifts": [
-      {"shift": 1, "weatherCode": "snow", "windCode": "strong_gale", "windspeed": 26, "temp": -24},
-      {"shift": 2, "weatherCode": "snow", "windCode": "gale", "windspeed": 23, "temp": -21},
-      {"shift": 3, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 19, "temp": -16},
-      {"shift": 4, "weatherCode": "fog", "windCode": "strong_breeze", "windspeed": 15, "temp": -12},
-      {"shift": 5, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 18, "temp": -14},
-      {"shift": 6, "weatherCode": "snow", "windCode": "gale", "windspeed": 24, "temp": -19}
+      {"shift": 1, "weatherCode": "snow", "windCode": "strong_gale", "windDirection": "N", "windspeed": 26, "temp": -24},
+      {"shift": 2, "weatherCode": "snow", "windCode": "gale", "windDirection": "N", "windspeed": 23, "temp": -21},
+      {"shift": 3, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "N", "windspeed": 19, "temp": -16},
+      {"shift": 4, "weatherCode": "fog", "windCode": "strong_breeze", "windDirection": "NE", "windspeed": 15, "temp": -12},
+      {"shift": 5, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "NE", "windspeed": 18, "temp": -14},
+      {"shift": 6, "weatherCode": "snow", "windCode": "gale", "windDirection": "N", "windspeed": 24, "temp": -19}
     ]
   },
   "2014-06-25": {
     "shifts": [
-      {"shift": 1, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 19, "temp": -22},
-      {"shift": 2, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 16, "temp": -19},
-      {"shift": 3, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 12, "temp": -14},
-      {"shift": 4, "weatherCode": "overcast", "windCode": "moderate_breeze", "windspeed": 10, "temp": -10},
-      {"shift": 5, "weatherCode": "cloudy", "windCode": "fresh_breeze", "windspeed": 13, "temp": -12},
-      {"shift": 6, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 17, "temp": -17}
+      {"shift": 1, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "NW", "windspeed": 19, "temp": -22},
+      {"shift": 2, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "NW", "windspeed": 16, "temp": -19},
+      {"shift": 3, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 12, "temp": -14},
+      {"shift": 4, "weatherCode": "overcast", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 10, "temp": -10},
+      {"shift": 5, "weatherCode": "cloudy", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 13, "temp": -12},
+      {"shift": 6, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "NW", "windspeed": 17, "temp": -17}
     ]
   },
   "2014-06-26": {
     "shifts": [
-      {"shift": 1, "weatherCode": "cloudy", "windCode": "fresh_breeze", "windspeed": 13, "temp": -18},
-      {"shift": 2, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 11, "temp": -15},
-      {"shift": 3, "weatherCode": "overcast", "windCode": "gentle_breeze", "windspeed": 8, "temp": -10},
-      {"shift": 4, "weatherCode": "partly_cloudy", "windCode": "gentle_breeze", "windspeed": 7, "temp": -6},
-      {"shift": 5, "weatherCode": "cloudy", "windCode": "moderate_breeze", "windspeed": 10, "temp": -8},
-      {"shift": 6, "weatherCode": "fog", "windCode": "fresh_breeze", "windspeed": 13, "temp": -13}
+      {"shift": 1, "weatherCode": "cloudy", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 13, "temp": -18},
+      {"shift": 2, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 11, "temp": -15},
+      {"shift": 3, "weatherCode": "overcast", "windCode": "gentle_breeze", "windDirection": "SW", "windspeed": 8, "temp": -10},
+      {"shift": 4, "weatherCode": "partly_cloudy", "windCode": "gentle_breeze", "windDirection": "S", "windspeed": 7, "temp": -6},
+      {"shift": 5, "weatherCode": "cloudy", "windCode": "moderate_breeze", "windDirection": "SW", "windspeed": 10, "temp": -8},
+      {"shift": 6, "weatherCode": "fog", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 13, "temp": -13}
     ]
   },
   "2014-06-27": {
     "shifts": [
-      {"shift": 1, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 20, "temp": -21},
-      {"shift": 2, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 17, "temp": -18},
-      {"shift": 3, "weatherCode": "fog", "windCode": "fresh_breeze", "windspeed": 14, "temp": -13},
-      {"shift": 4, "weatherCode": "overcast", "windCode": "moderate_breeze", "windspeed": 11, "temp": -9},
-      {"shift": 5, "weatherCode": "cloudy", "windCode": "fresh_breeze", "windspeed": 14, "temp": -11},
-      {"shift": 6, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 18, "temp": -16}
+      {"shift": 1, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "NW", "windspeed": 20, "temp": -21},
+      {"shift": 2, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "NW", "windspeed": 17, "temp": -18},
+      {"shift": 3, "weatherCode": "fog", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 14, "temp": -13},
+      {"shift": 4, "weatherCode": "overcast", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 11, "temp": -9},
+      {"shift": 5, "weatherCode": "cloudy", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 14, "temp": -11},
+      {"shift": 6, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "NW", "windspeed": 18, "temp": -16}
     ]
   },
   "2014-06-28": {
     "shifts": [
-      {"shift": 1, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 12, "temp": -17},
-      {"shift": 2, "weatherCode": "cloudy", "windCode": "gentle_breeze", "windspeed": 9, "temp": -14},
-      {"shift": 3, "weatherCode": "overcast", "windCode": "moderate_breeze", "windspeed": 10, "temp": -9},
-      {"shift": 4, "weatherCode": "cloudy", "windCode": "gentle_breeze", "windspeed": 8, "temp": -5},
-      {"shift": 5, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 11, "temp": -7},
-      {"shift": 6, "weatherCode": "overcast", "windCode": "fresh_breeze", "windspeed": 13, "temp": -12}
+      {"shift": 1, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 12, "temp": -17},
+      {"shift": 2, "weatherCode": "cloudy", "windCode": "gentle_breeze", "windDirection": "SW", "windspeed": 9, "temp": -14},
+      {"shift": 3, "weatherCode": "overcast", "windCode": "moderate_breeze", "windDirection": "SW", "windspeed": 10, "temp": -9},
+      {"shift": 4, "weatherCode": "cloudy", "windCode": "gentle_breeze", "windDirection": "S", "windspeed": 8, "temp": -5},
+      {"shift": 5, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "SW", "windspeed": 11, "temp": -7},
+      {"shift": 6, "weatherCode": "overcast", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 13, "temp": -12}
     ]
   },
   "2014-06-29": {
     "shifts": [
-      {"shift": 1, "weatherCode": "snow", "windCode": "gale", "windspeed": 22, "temp": -23},
-      {"shift": 2, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 19, "temp": -20},
-      {"shift": 3, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 16, "temp": -15},
-      {"shift": 4, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 12, "temp": -11},
-      {"shift": 5, "weatherCode": "overcast", "windCode": "fresh_breeze", "windspeed": 15, "temp": -13},
-      {"shift": 6, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 20, "temp": -18}
+      {"shift": 1, "weatherCode": "snow", "windCode": "gale", "windDirection": "N", "windspeed": 22, "temp": -23},
+      {"shift": 2, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "N", "windspeed": 19, "temp": -20},
+      {"shift": 3, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "N", "windspeed": 16, "temp": -15},
+      {"shift": 4, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "NE", "windspeed": 12, "temp": -11},
+      {"shift": 5, "weatherCode": "overcast", "windCode": "fresh_breeze", "windDirection": "NE", "windspeed": 15, "temp": -13},
+      {"shift": 6, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "N", "windspeed": 20, "temp": -18}
     ]
   },
   "2014-06-30": {
     "shifts": [
-      {"shift": 1, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 21, "temp": -24},
-      {"shift": 2, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 18, "temp": -21},
-      {"shift": 3, "weatherCode": "fog", "windCode": "fresh_breeze", "windspeed": 14, "temp": -16},
-      {"shift": 4, "weatherCode": "overcast", "windCode": "moderate_breeze", "windspeed": 11, "temp": -12},
-      {"shift": 5, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 16, "temp": -14},
-      {"shift": 6, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 19, "temp": -19}
+      {"shift": 1, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "NW", "windspeed": 21, "temp": -24},
+      {"shift": 2, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "NW", "windspeed": 18, "temp": -21},
+      {"shift": 3, "weatherCode": "fog", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 14, "temp": -16},
+      {"shift": 4, "weatherCode": "overcast", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 11, "temp": -12},
+      {"shift": 5, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "NW", "windspeed": 16, "temp": -14},
+      {"shift": 6, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "NW", "windspeed": 19, "temp": -19}
     ]
   },
   "2014-07-01": {
     "shifts": [
-      {"shift": 1, "weatherCode": "overcast", "windCode": "fresh_breeze", "windspeed": 14, "temp": -19},
-      {"shift": 2, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 11, "temp": -16},
-      {"shift": 3, "weatherCode": "cloudy", "windCode": "gentle_breeze", "windspeed": 8, "temp": -11},
-      {"shift": 4, "weatherCode": "partly_cloudy", "windCode": "gentle_breeze", "windspeed": 7, "temp": -7},
-      {"shift": 5, "weatherCode": "cloudy", "windCode": "moderate_breeze", "windspeed": 10, "temp": -9},
-      {"shift": 6, "weatherCode": "fog", "windCode": "fresh_breeze", "windspeed": 13, "temp": -14}
+      {"shift": 1, "weatherCode": "overcast", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 14, "temp": -19},
+      {"shift": 2, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 11, "temp": -16},
+      {"shift": 3, "weatherCode": "cloudy", "windCode": "gentle_breeze", "windDirection": "SW", "windspeed": 8, "temp": -11},
+      {"shift": 4, "weatherCode": "partly_cloudy", "windCode": "gentle_breeze", "windDirection": "S", "windspeed": 7, "temp": -7},
+      {"shift": 5, "weatherCode": "cloudy", "windCode": "moderate_breeze", "windDirection": "SW", "windspeed": 10, "temp": -9},
+      {"shift": 6, "weatherCode": "fog", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 13, "temp": -14}
     ]
   },
   "2014-07-02": {
     "shifts": [
-      {"shift": 1, "weatherCode": "snow", "windCode": "gale", "windspeed": 23, "temp": -22},
-      {"shift": 2, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 20, "temp": -19},
-      {"shift": 3, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 16, "temp": -14},
-      {"shift": 4, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 12, "temp": -10},
-      {"shift": 5, "weatherCode": "overcast", "windCode": "fresh_breeze", "windspeed": 15, "temp": -12},
-      {"shift": 6, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 21, "temp": -17}
+      {"shift": 1, "weatherCode": "snow", "windCode": "gale", "windDirection": "N", "windspeed": 23, "temp": -22},
+      {"shift": 2, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "N", "windspeed": 20, "temp": -19},
+      {"shift": 3, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "N", "windspeed": 16, "temp": -14},
+      {"shift": 4, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "NE", "windspeed": 12, "temp": -10},
+      {"shift": 5, "weatherCode": "overcast", "windCode": "fresh_breeze", "windDirection": "NE", "windspeed": 15, "temp": -12},
+      {"shift": 6, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "N", "windspeed": 21, "temp": -17}
     ]
   },
   "2014-07-03": {
     "shifts": [
-      {"shift": 1, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 17, "temp": -20},
-      {"shift": 2, "weatherCode": "snow", "windCode": "fresh_breeze", "windspeed": 14, "temp": -17},
-      {"shift": 3, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 11, "temp": -12},
-      {"shift": 4, "weatherCode": "overcast", "windCode": "gentle_breeze", "windspeed": 8, "temp": -8},
-      {"shift": 5, "weatherCode": "cloudy", "windCode": "moderate_breeze", "windspeed": 10, "temp": -10},
-      {"shift": 6, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 16, "temp": -15}
+      {"shift": 1, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "NW", "windspeed": 17, "temp": -20},
+      {"shift": 2, "weatherCode": "snow", "windCode": "fresh_breeze", "windDirection": "NW", "windspeed": 14, "temp": -17},
+      {"shift": 3, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 11, "temp": -12},
+      {"shift": 4, "weatherCode": "overcast", "windCode": "gentle_breeze", "windDirection": "W", "windspeed": 8, "temp": -8},
+      {"shift": 5, "weatherCode": "cloudy", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 10, "temp": -10},
+      {"shift": 6, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "NW", "windspeed": 16, "temp": -15}
     ]
   },
   "2014-07-04": {
     "shifts": [
-      {"shift": 1, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 12, "temp": -18},
-      {"shift": 2, "weatherCode": "cloudy", "windCode": "gentle_breeze", "windspeed": 9, "temp": -15},
-      {"shift": 3, "weatherCode": "overcast", "windCode": "moderate_breeze", "windspeed": 10, "temp": -10},
-      {"shift": 4, "weatherCode": "cloudy", "windCode": "gentle_breeze", "windspeed": 8, "temp": -6},
-      {"shift": 5, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 11, "temp": -8},
-      {"shift": 6, "weatherCode": "overcast", "windCode": "fresh_breeze", "windspeed": 14, "temp": -13}
+      {"shift": 1, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 12, "temp": -18},
+      {"shift": 2, "weatherCode": "cloudy", "windCode": "gentle_breeze", "windDirection": "SW", "windspeed": 9, "temp": -15},
+      {"shift": 3, "weatherCode": "overcast", "windCode": "moderate_breeze", "windDirection": "SW", "windspeed": 10, "temp": -10},
+      {"shift": 4, "weatherCode": "cloudy", "windCode": "gentle_breeze", "windDirection": "S", "windspeed": 8, "temp": -6},
+      {"shift": 5, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "SW", "windspeed": 11, "temp": -8},
+      {"shift": 6, "weatherCode": "overcast", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 14, "temp": -13}
     ]
   },
   "2014-07-05": {
     "shifts": [
-      {"shift": 1, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 19, "temp": -21},
-      {"shift": 2, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 16, "temp": -18},
-      {"shift": 3, "weatherCode": "fog", "windCode": "fresh_breeze", "windspeed": 13, "temp": -13},
-      {"shift": 4, "weatherCode": "overcast", "windCode": "moderate_breeze", "windspeed": 10, "temp": -9},
-      {"shift": 5, "weatherCode": "cloudy", "windCode": "fresh_breeze", "windspeed": 14, "temp": -11},
-      {"shift": 6, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 17, "temp": -16}
+      {"shift": 1, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "NW", "windspeed": 19, "temp": -21},
+      {"shift": 2, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "NW", "windspeed": 16, "temp": -18},
+      {"shift": 3, "weatherCode": "fog", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 13, "temp": -13},
+      {"shift": 4, "weatherCode": "overcast", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 10, "temp": -9},
+      {"shift": 5, "weatherCode": "cloudy", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 14, "temp": -11},
+      {"shift": 6, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "NW", "windspeed": 17, "temp": -16}
     ]
   },
   "2014-07-06": {
     "shifts": [
-      {"shift": 1, "weatherCode": "snow", "windCode": "gale", "windspeed": 24, "temp": -25},
-      {"shift": 2, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 21, "temp": -22},
-      {"shift": 3, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 17, "temp": -17},
-      {"shift": 4, "weatherCode": "fog", "windCode": "fresh_breeze", "windspeed": 13, "temp": -13},
-      {"shift": 5, "weatherCode": "overcast", "windCode": "strong_breeze", "windspeed": 16, "temp": -15},
-      {"shift": 6, "weatherCode": "snow", "windCode": "gale", "windspeed": 22, "temp": -20}
+      {"shift": 1, "weatherCode": "snow", "windCode": "gale", "windDirection": "N", "windspeed": 24, "temp": -25},
+      {"shift": 2, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "N", "windspeed": 21, "temp": -22},
+      {"shift": 3, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "N", "windspeed": 17, "temp": -17},
+      {"shift": 4, "weatherCode": "fog", "windCode": "fresh_breeze", "windDirection": "NE", "windspeed": 13, "temp": -13},
+      {"shift": 5, "weatherCode": "overcast", "windCode": "strong_breeze", "windDirection": "NE", "windspeed": 16, "temp": -15},
+      {"shift": 6, "weatherCode": "snow", "windCode": "gale", "windDirection": "N", "windspeed": 22, "temp": -20}
     ]
   },
   "2014-07-07": {
     "shifts": [
-      {"shift": 1, "weatherCode": "overcast", "windCode": "fresh_breeze", "windspeed": 15, "temp": -19},
-      {"shift": 2, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 12, "temp": -16},
-      {"shift": 3, "weatherCode": "cloudy", "windCode": "gentle_breeze", "windspeed": 9, "temp": -11},
-      {"shift": 4, "weatherCode": "partly_cloudy", "windCode": "gentle_breeze", "windspeed": 7, "temp": -7},
-      {"shift": 5, "weatherCode": "cloudy", "windCode": "moderate_breeze", "windspeed": 11, "temp": -9},
-      {"shift": 6, "weatherCode": "fog", "windCode": "fresh_breeze", "windspeed": 14, "temp": -14}
+      {"shift": 1, "weatherCode": "overcast", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 15, "temp": -19},
+      {"shift": 2, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 12, "temp": -16},
+      {"shift": 3, "weatherCode": "cloudy", "windCode": "gentle_breeze", "windDirection": "SW", "windspeed": 9, "temp": -11},
+      {"shift": 4, "weatherCode": "partly_cloudy", "windCode": "gentle_breeze", "windDirection": "S", "windspeed": 7, "temp": -7},
+      {"shift": 5, "weatherCode": "cloudy", "windCode": "moderate_breeze", "windDirection": "SW", "windspeed": 11, "temp": -9},
+      {"shift": 6, "weatherCode": "fog", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 14, "temp": -14}
     ]
   },
   "2014-07-08": {
     "shifts": [
-      {"shift": 1, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 20, "temp": -22},
-      {"shift": 2, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 17, "temp": -19},
-      {"shift": 3, "weatherCode": "fog", "windCode": "fresh_breeze", "windspeed": 14, "temp": -14},
-      {"shift": 4, "weatherCode": "overcast", "windCode": "moderate_breeze", "windspeed": 11, "temp": -10},
-      {"shift": 5, "weatherCode": "cloudy", "windCode": "fresh_breeze", "windspeed": 15, "temp": -12},
-      {"shift": 6, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 19, "temp": -17}
+      {"shift": 1, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "NW", "windspeed": 20, "temp": -22},
+      {"shift": 2, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "NW", "windspeed": 17, "temp": -19},
+      {"shift": 3, "weatherCode": "fog", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 14, "temp": -14},
+      {"shift": 4, "weatherCode": "overcast", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 11, "temp": -10},
+      {"shift": 5, "weatherCode": "cloudy", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 15, "temp": -12},
+      {"shift": 6, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "NW", "windspeed": 19, "temp": -17}
     ]
   },
   "2014-07-09": {
     "shifts": [
-      {"shift": 1, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 11, "temp": -18},
-      {"shift": 2, "weatherCode": "cloudy", "windCode": "gentle_breeze", "windspeed": 8, "temp": -15},
-      {"shift": 3, "weatherCode": "overcast", "windCode": "moderate_breeze", "windspeed": 10, "temp": -10},
-      {"shift": 4, "weatherCode": "cloudy", "windCode": "gentle_breeze", "windspeed": 7, "temp": -6},
-      {"shift": 5, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 9, "temp": -8},
-      {"shift": 6, "weatherCode": "overcast", "windCode": "fresh_breeze", "windspeed": 13, "temp": -13}
-    ]
-  },
-  "2014-07-10": {
-    "shifts": [
-      {"shift": 1, "weatherCode": "snow", "windCode": "gale", "windspeed": 23, "temp": -24},
-      {"shift": 2, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 20, "temp": -21},
-      {"shift": 3, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 16, "temp": -16},
-      {"shift": 4, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 12, "temp": -12},
-      {"shift": 5, "weatherCode": "overcast", "windCode": "fresh_breeze", "windspeed": 15, "temp": -14},
-      {"shift": 6, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 21, "temp": -19}
-    ]
-  },
-  "2014-07-11": {
-    "shifts": [
-      {"shift": 1, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 18, "temp": -21},
-      {"shift": 2, "weatherCode": "snow", "windCode": "fresh_breeze", "windspeed": 15, "temp": -18},
-      {"shift": 3, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 11, "temp": -13},
-      {"shift": 4, "weatherCode": "overcast", "windCode": "gentle_breeze", "windspeed": 9, "temp": -9},
-      {"shift": 5, "weatherCode": "cloudy", "windCode": "moderate_breeze", "windspeed": 12, "temp": -11},
-      {"shift": 6, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 17, "temp": -16}
-    ]
-  },
-  "2014-07-12": {
-    "shifts": [
-      {"shift": 1, "weatherCode": "cloudy", "windCode": "fresh_breeze", "windspeed": 14, "temp": -17},
-      {"shift": 2, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 11, "temp": -14},
-      {"shift": 3, "weatherCode": "overcast", "windCode": "gentle_breeze", "windspeed": 8, "temp": -9},
-      {"shift": 4, "weatherCode": "partly_cloudy", "windCode": "gentle_breeze", "windspeed": 6, "temp": -5},
-      {"shift": 5, "weatherCode": "cloudy", "windCode": "moderate_breeze", "windspeed": 10, "temp": -7},
-      {"shift": 6, "weatherCode": "fog", "windCode": "fresh_breeze", "windspeed": 13, "temp": -12}
-    ]
-  },
-  "2014-07-13": {
-    "shifts": [
-      {"shift": 1, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 19, "temp": -20},
-      {"shift": 2, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 16, "temp": -17},
-      {"shift": 3, "weatherCode": "fog", "windCode": "fresh_breeze", "windspeed": 13, "temp": -12},
-      {"shift": 4, "weatherCode": "overcast", "windCode": "moderate_breeze", "windspeed": 10, "temp": -8},
-      {"shift": 5, "weatherCode": "cloudy", "windCode": "fresh_breeze", "windspeed": 14, "temp": -10},
-      {"shift": 6, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 17, "temp": -15}
-    ]
-  },
-  "2014-07-14": {
-    "shifts": [
-      {"shift": 1, "weatherCode": "snow", "windCode": "gale", "windspeed": 22, "temp": -23},
-      {"shift": 2, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 19, "temp": -20},
-      {"shift": 3, "weatherCode": "snow", "windCode": "strong_breeze", "windspeed": 16, "temp": -15},
-      {"shift": 4, "weatherCode": "fog", "windCode": "moderate_breeze", "windspeed": 12, "temp": -11},
-      {"shift": 5, "weatherCode": "overcast", "windCode": "fresh_breeze", "windspeed": 15, "temp": -13},
-      {"shift": 6, "weatherCode": "snow", "windCode": "near_gale", "windspeed": 20}
+      {"shift": 1, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 11, "temp": -18},
+      {"shift": 2, "weatherCode": "cloudy", "windCode": "gentle_breeze", "windDirection": "SW", "windspeed": 8, "temp": -15},
+      {"shift": 3, "weatherCode": "overcast", "windCode": "moderate_breeze", "windDirection": "SW", "windspeed": 10, "temp": -10},
+      {"shift": 4, "weatherCode": "cloudy", "windCode": "gentle_breeze", "windDirection": "S", "windspeed": 7, "temp": -6},
+      {"shift": 5, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "SW", "windspeed": 9, "temp": -8},
+      {"shift": 6, "weatherCode": "overcast", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 13, "temp": -13}
     ]
   }
 }

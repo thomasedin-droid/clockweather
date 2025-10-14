@@ -1,3 +1,7 @@
+// Clock & Weather version 1.3.0 Build 014
+// Fixed: Wind direction now shows as N, NE, E, SE etc instead of arrows
+// Fixed: FXMaster API integration
+
 console.log("Clock & Weather | Script loaded");
 
 class ClockWeatherApp extends Application {
@@ -29,7 +33,8 @@ class ClockWeatherApp extends Application {
       shiftNumber: shiftNumber,
       weather: weatherData,
       altitude: altitude,
-      isGM: game.user.isGM
+      isGM: game.user.isGM,
+      fxMasterEnabled: game.modules.get("fxmaster")?.active
     };
   }
 
@@ -80,9 +85,12 @@ class ClockWeatherApp extends Application {
       return {
         weatherCode: game.i18n.localize("CLOCKWEATHER.NoData"),
         windCode: "",
+        windDirection: "",
+        windDirectionLocalized: "",
         windspeed: 0,
         temp: 0,
-        feelsLike: 0
+        feelsLike: 0,
+        visibility: 10000
       };
     }
 
@@ -92,23 +100,88 @@ class ClockWeatherApp extends Application {
       return {
         weatherCode: game.i18n.localize("CLOCKWEATHER.NoData"),
         windCode: "",
+        windDirection: "",
+        windDirectionLocalized: "",
         windspeed: 0,
         temp: 0,
-        feelsLike: 0
+        feelsLike: 0,
+        visibility: 10000
       };
     }
 
     const altitude = game.settings.get("clockweather", "altitude");
     const adjustedTemp = shiftData.temp - Math.round(altitude / 150);
     const feelsLike = this.calculateFeelsLike(adjustedTemp, shiftData.windspeed);
-// change Weather to Weathertype and Wind to Windtype
+    const visibility = this.calculateVisibility(shiftData.weatherCode, shiftData.windspeed);
+    const windDir = shiftData.windDirection || "N";
+    
     return {
       weatherCode: game.i18n.localize(`CLOCKWEATHER.Weathertype.${shiftData.weatherCode}`) || shiftData.weatherCode,
       windCode: game.i18n.localize(`CLOCKWEATHER.Windtype.${shiftData.windCode}`) || shiftData.windCode,
+      windDirection: windDir,
+      windDirectionLocalized: game.i18n.localize(`CLOCKWEATHER.WindDir.${windDir}`) || windDir,
       windspeed: shiftData.windspeed,
       temp: adjustedTemp,
-      feelsLike: feelsLike
+      feelsLike: feelsLike,
+      visibility: visibility,
+      visibilityText: this.getVisibilityText(visibility),
+      rawWeatherCode: shiftData.weatherCode
     };
+  }
+
+  calculateVisibility(weatherCode, windspeed) {
+    // Beräkna sikt i meter baserat på väderförhållanden
+    let baseVisibility = 10000; // 10km i klart väder
+    
+    switch(weatherCode) {
+      case "clear_sky":
+      case "clear":
+      case "fair":
+        baseVisibility = 10000;
+        break;
+      case "partly_cloudy":
+      case "cloudy":
+        baseVisibility = 8000;
+        break;
+      case "overcast":
+        baseVisibility = 6000;
+        break;
+      case "fog":
+      case "mist":
+        baseVisibility = 200;
+        break;
+      case "light_rain":
+      case "light_snow":
+        baseVisibility = 4000;
+        break;
+      case "rain":
+      case "snow":
+        baseVisibility = 1000;
+        break;
+      case "heavy_rain":
+      case "heavy_snow":
+      case "blizzard":
+        baseVisibility = 200;
+        break;
+      case "thunderstorm":
+        baseVisibility = 2000;
+        break;
+    }
+    
+    // Stark vind kan minska sikten ytterligare
+    if (windspeed > 15) {
+      baseVisibility = Math.min(baseVisibility, baseVisibility * 0.7);
+    }
+    
+    return Math.round(baseVisibility);
+  }
+
+  getVisibilityText(visibility) {
+    if (visibility >= 10000) return game.i18n.localize("CLOCKWEATHER.Visibility.Excellent");
+    if (visibility >= 4000) return game.i18n.localize("CLOCKWEATHER.Visibility.Good");
+    if (visibility >= 1000) return game.i18n.localize("CLOCKWEATHER.Visibility.Moderate");
+    if (visibility >= 200) return game.i18n.localize("CLOCKWEATHER.Visibility.Poor");
+    return game.i18n.localize("CLOCKWEATHER.Visibility.VeryPoor");
   }
 
   calculateFeelsLike(temp, windspeed) {
@@ -148,6 +221,7 @@ class ClockWeatherApp extends Application {
     html.find('.altitude-slider').on('input', this._onAltitudeInput.bind(this));
     html.find('.altitude-slider').change(this._onAltitudeChange.bind(this));
     html.find('.post-to-chat').click(this._onPostToChat.bind(this));
+    html.find('.toggle-fx').click(this._onToggleFX.bind(this));
   }
 
   async _onAdvanceTime(event) {
@@ -179,6 +253,12 @@ class ClockWeatherApp extends Application {
     });
 
     this.updateAmbientLighting(newTime);
+    
+    // Uppdatera FXMaster om aktiverat
+    if (game.settings.get("clockweather", "autoFXMaster")) {
+      await this.updateFXMaster();
+    }
+    
     this.render();
   }
 
@@ -196,6 +276,10 @@ class ClockWeatherApp extends Application {
       time: current.time
     });
     
+    if (game.settings.get("clockweather", "autoFXMaster")) {
+      await this.updateFXMaster();
+    }
+    
     this.render();
   }
 
@@ -209,6 +293,11 @@ class ClockWeatherApp extends Application {
     });
     
     this.updateAmbientLighting(newTime);
+    
+    if (game.settings.get("clockweather", "autoFXMaster")) {
+      await this.updateFXMaster();
+    }
+    
     this.render();
   }
 
@@ -222,6 +311,19 @@ class ClockWeatherApp extends Application {
     const newAltitude = parseInt(event.target.value) || 0;
     await game.settings.set("clockweather", "altitude", newAltitude);
     this.render();
+  }
+
+  async _onToggleFX(event) {
+    event.preventDefault();
+    
+    if (!game.modules.get("fxmaster")?.active) {
+      ui.notifications.warn(game.i18n.localize("CLOCKWEATHER.FXMasterNotActive"));
+      return;
+    }
+    
+    console.log("Clock & Weather | Toggling FXMaster effects...");
+    await this.updateFXMaster();
+    ui.notifications.info(game.i18n.localize("CLOCKWEATHER.FXMasterUpdated"));
   }
 
   async _onPostToChat(event) {
@@ -240,9 +342,10 @@ class ClockWeatherApp extends Application {
         <p><strong>${game.i18n.localize("CLOCKWEATHER.CurrentShift")}:</strong> ${shiftName}</p>
         <hr>
         <p><strong>${game.i18n.localize("CLOCKWEATHER.Conditions")}:</strong> ${weatherData.weatherCode}</p>
-        <p><strong>${game.i18n.localize("CLOCKWEATHER.Wind")}:</strong> ${weatherData.windCode} (${weatherData.windspeed} m/s)</p>
+        <p><strong>${game.i18n.localize("CLOCKWEATHER.Wind")}:</strong> ${weatherData.windCode} ${weatherData.windDirection} (${weatherData.windspeed} m/s)</p>
         <p><strong>${game.i18n.localize("CLOCKWEATHER.Temperature")}:</strong> ${weatherData.temp}°C</p>
         <p><strong>${game.i18n.localize("CLOCKWEATHER.FeelsLike")}:</strong> ${weatherData.feelsLike}°C</p>
+        <p><strong>${game.i18n.localize("CLOCKWEATHER.Visibility")}:</strong> ${weatherData.visibilityText} (${weatherData.visibility}m)</p>
       </div>
     `;
     
@@ -277,6 +380,189 @@ class ClockWeatherApp extends Application {
 
     canvas.scene.update({ darkness: darkness });
   }
+
+  async updateFXMaster() {
+    if (!game.modules.get("fxmaster")?.active) {
+      console.warn("Clock & Weather | FXMaster module is not active");
+      return;
+    }
+    
+    if (!game.user.isGM) {
+      console.warn("Clock & Weather | Only GM can control FXMaster");
+      return;
+    }
+    
+    if (!canvas.scene) {
+      console.warn("Clock & Weather | No active scene");
+      return;
+    }
+
+    console.log("Clock & Weather | Updating FXMaster effects...");
+
+    const currentDateTime = this.getCurrentDateTime();
+    const shiftNumber = this.calculateShiftNumber(currentDateTime.time);
+    const weatherData = this.getWeatherForDateAndShift(currentDateTime.date, shiftNumber);
+
+    try {
+      // Clear existing weather effects first
+      console.log("Clock & Weather | Clearing existing ClockWeather effects...");
+      
+      // Remove previous ClockWeather effects
+      const existingEffects = ["clockweather-rain", "clockweather-snow", "clockweather-fog", 
+                               "clockweather-lightning", "clockweather-leaves"];
+      
+      for (const effectId of existingEffects) {
+        Hooks.call("fxmaster.switchParticleEffect", {
+          name: effectId,
+          type: "off"
+        });
+      }
+
+      // Get weather effects to apply
+      const effects = this.getWeatherEffects(weatherData);
+      console.log("Clock & Weather | Applying effects:", effects);
+
+      // Apply new effects using FXMaster Hooks
+      for (const effect of effects) {
+        try {
+          console.log(`Clock & Weather | Applying ${effect.type} with options:`, effect.options);
+          
+          Hooks.call("fxmaster.switchParticleEffect", {
+            name: `clockweather-${effect.type}`,
+            type: effect.type,
+            options: effect.options
+          });
+          
+        } catch (error) {
+          console.error(`Clock & Weather | Error applying effect ${effect.type}:`, error);
+        }
+      }
+
+      console.log("Clock & Weather | FXMaster effects updated successfully");
+      
+    } catch (error) {
+      console.error("Clock & Weather | Error updating FXMaster:", error);
+      ui.notifications.error(`FXMaster error: ${error.message}`);
+    }
+  }
+
+  getWeatherEffects(weatherData) {
+    const effects = [];
+    const weatherCode = weatherData.rawWeatherCode || weatherData.weatherCode;
+    const windspeed = weatherData.windspeed;
+    const windDir = weatherData.windDirection || "N";
+
+    console.log("Clock & Weather | Getting effects for weather:", weatherCode, "windspeed:", windspeed, "direction:", windDir);
+
+    // Convert wind direction to angle
+    // 0° = West to East (left to right)
+    // 90° = South to North (bottom to top)
+    // 180° = East to West (right to left)
+    // 270° = North to South (top to bottom)
+    const directionAngles = {
+      "N": 270,    // Blowing from North (top to bottom)
+      "NE": 315,   // Blowing from Northeast (top-right to bottom-left)
+      "E": 0,      // Blowing from East (right to left) - wraps to 360
+      "SE": 45,    // Blowing from Southeast (bottom-right to top-left)
+      "S": 90,     // Blowing from South (bottom to top)
+      "SW": 135,   // Blowing from Southwest (bottom-left to top-right)
+      "W": 180,    // Blowing from West (left to right)
+      "NW": 225    // Blowing from Northwest (top-left to bottom-right)
+    };
+    
+    const windAngle = directionAngles[windDir] || 180;
+
+    // Regneffekter
+    if (weatherCode.includes("rain")) {
+      let density = 0.5;
+      let speed = 1.5;
+      
+      if (weatherCode.includes("heavy")) {
+        density = 0.8;
+        speed = 2.0;
+      } else if (weatherCode.includes("light")) {
+        density = 0.3;
+        speed = 1.0;
+      }
+      
+      effects.push({
+        type: "rain",
+        options: { 
+          density: density, 
+          speed: speed, 
+          direction: windAngle 
+        }
+      });
+    }
+
+    // Snöeffekter
+    if (weatherCode.includes("snow")) {
+      let density = 0.4;
+      let speed = 1.0;
+      
+      if (weatherCode.includes("blizzard")) {
+        density = 1.0;
+        speed = 2.5;
+      } else if (weatherCode.includes("heavy")) {
+        density = 0.7;
+        speed = 1.5;
+      } else if (weatherCode.includes("light")) {
+        density = 0.2;
+        speed = 0.5;
+      }
+      
+      effects.push({
+        type: "snow",
+        options: { 
+          density: density, 
+          speed: speed, 
+          direction: windAngle 
+        }
+      });
+    }
+
+    // Dimma
+    if (weatherCode.includes("fog") || weatherCode.includes("mist")) {
+      effects.push({
+        type: "fog",
+        options: { 
+          density: 0.5, 
+          speed: 0.3 
+        }
+      });
+    }
+
+    // Åska - använd lightning om FXMaster har det
+    if (weatherCode.includes("thunder")) {
+      // FXMaster kanske inte har lightning, prova att lägga till regn med högre intensitet
+      effects.push({
+        type: "rain",
+        options: { 
+          density: 0.9, 
+          speed: 2.5, 
+          direction: windAngle 
+        }
+      });
+      
+      // Försök med lightning om det finns
+      // Note: Vissa versioner av FXMaster kanske inte har lightning
+      // effects.push({
+      //   type: "lightning",
+      //   options: { frequency: 5000, brightness: 0.8 }
+      // });
+    }
+
+    // Vind - löv om varmt väder
+    if (windspeed > 12 && weatherData.temp > 5) {
+      // FXMaster kanske inte har leaves, men vi kan testa
+      // effects.push({
+      //   type: "leaves",
+      //   options: { density: 0.3, speed: 1.5, direction: windAngle }
+      // });
+    }
+
+    return effects;
+  }
 }
 
 // Registrera inställningar
@@ -298,6 +584,16 @@ Hooks.once("init", () => {
     config: true,
     type: Boolean,
     default: false
+  });
+
+  game.settings.register("clockweather", "autoFXMaster", {
+    name: game.i18n.localize("CLOCKWEATHER.Settings.AutoFXMaster"),
+    hint: game.i18n.localize("CLOCKWEATHER.Settings.AutoFXMasterHint"),
+    scope: "world",
+    config: true,
+    type: Boolean,
+    default: false,
+    requiresReload: false
   });
 
   game.settings.register("clockweather", "weatherFile", {
@@ -386,6 +682,18 @@ Hooks.on("getSceneControlButtons", controls => {
 Hooks.once("ready", async () => {
   const weatherFile = game.settings.get("clockweather", "weatherFile");
   await loadWeatherData(weatherFile);
+  
+  // Log FXMaster status
+  if (game.modules.get("fxmaster")?.active) {
+    console.log("Clock & Weather | FXMaster detected and active");
+    console.log("Clock & Weather | FXMASTER API:", window.FXMASTER);
+  }
+  
+  // Applicera FXMaster om aktiverat och modulen finns
+  if (game.settings.get("clockweather", "autoFXMaster") && game.modules.get("fxmaster")?.active) {
+    const app = new ClockWeatherApp();
+    await app.updateFXMaster();
+  }
   
   console.log("Clock & Weather | Ready");
 });
