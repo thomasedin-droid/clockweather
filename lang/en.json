@@ -8,8 +8,10 @@
     "Weather": "Weather",
     "Conditions": "Conditions",
     "Wind": "Wind",
+    "WindDirection": "Wind Direction",
     "Temperature": "Temperature",
     "FeelsLike": "Feels Like",
+    "Visibility": "Visibility",
     "Altitude": "Altitude",
     "PostToChat": "Post to Chat",
     "PostedToChat": "Weather posted to chat!",
@@ -21,6 +23,9 @@
     "Backwards4h": "Go back 4 hours (1 shift)",
     "NoData": "No weather data available",
     "ErrorLoadingWeather": "Error loading weather data file",
+    "ToggleWeatherFX": "Toggle Weather Effects",
+    "FXMasterNotActive": "FXMaster module is not active!",
+    "FXMasterUpdated": "Weather effects updated!",
     
     "Shift1": "Night Shift (00:00-04:00)",
     "Shift2": "Dawn Shift (04:00-08:00)",
@@ -38,9 +43,14 @@
       "rain": "Rain",
       "heavy_rain": "Heavy Rain",
       "thunderstorm": "Thunderstorm",
+      "light_snow": "Light Snow",
       "snow": "Snow",
+      "heavy_snow": "Heavy Snow",
+      "blizzard": "Blizzard",
       "fog": "Fog",
-      "mist": "Mist"
+      "mist": "Mist",
+      "fair": "Fair",
+      "clear": "Clear"
     },
     
     "Windtype": {
@@ -58,10 +68,33 @@
       "violent_storm": "Violent Storm",
       "hurricane": "Hurricane"
     },
+
+    "WindDir": {
+      "title": "Direction",
+      "N": "N",
+      "NE": "NE",
+      "E": "E",
+      "SE": "SE",
+      "S": "S",
+      "SW": "SW",
+      "W": "W",
+      "NW": "NW"
+    },
+
+    "Visibility": {
+      "Title": "Visibility",
+      "Excellent": "Excellent",
+      "Good": "Good",
+      "Moderate": "Moderate",
+      "Poor": "Poor",
+      "VeryPoor": "Very Poor"
+    },
     
     "Settings": {
       "ControlLight": "Control Ambient Light",
       "ControlLightHint": "Automatically adjust scene darkness based on time of day",
+      "AutoFXMaster": "Auto Weather Effects (FXMaster)",
+      "AutoFXMasterHint": "Automatically apply weather effects using FXMaster when time/weather changes (requires FXMaster module)",
       "WeatherFile": "Weather Data File",
       "WeatherFileHint": "Select the weather data JSON file to use (must be in weatherdata folder)",
       "Altitude": "Altitude Above Sea Level (meters)",

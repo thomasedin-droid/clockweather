@@ -8,8 +8,10 @@
     "Weather": "Väder",
     "Conditions": "Förhållanden",
     "Wind": "Vind",
+    "WindDirection": "Vindriktning",
     "Temperature": "Temperatur",
     "FeelsLike": "Känns Som",
+    "Visibility": "Sikt",
     "Altitude": "Höjd",
     "PostToChat": "Skicka till Chatt",
     "PostedToChat": "Väder skickat till chatten!",
@@ -21,6 +23,9 @@
     "Backwards4h": "Tillbaka 4 timmar (1 skift)",
     "NoData": "Ingen väderdata tillgänglig",
     "ErrorLoadingWeather": "Fel vid laddning av väderfil",
+    "ToggleWeatherFX": "Växla Vädereffekter",
+    "FXMasterNotActive": "FXMaster-modulen är inte aktiv!",
+    "FXMasterUpdated": "Vädereffekter uppdaterade!",
     
     "Shift1": "Nattskift (00:00-04:00)",
     "Shift2": "Gryningsskift (04:00-08:00)",
@@ -38,9 +43,14 @@
       "rain": "Regn",
       "heavy_rain": "Kraftigt Regn",
       "thunderstorm": "Åskväder",
+      "light_snow": "Lätt Snö",
       "snow": "Snö",
+      "heavy_snow": "Kraftigt Snöfall",
+      "blizzard": "Snöstorm",
       "fog": "Dimma",
-      "mist": "Dis"
+      "mist": "Dis",
+      "fair": "Klart",
+      "clear": "Klart"
     },
     
     "Windtype": {
@@ -58,10 +68,33 @@
       "violent_storm": "Svår Storm",
       "hurricane": "Orkan"
     },
+
+    "WindDir": {
+      "title": "Riktning",
+      "N": "N",
+      "NE": "NO",
+      "E": "O",
+      "SE": "SO",
+      "S": "S",
+      "SW": "SV",
+      "W": "V",
+      "NW": "NV"
+    },
+
+    "Visibility": {
+      "Title": "Sikt"
+      "Excellent": "Utmärkt",
+      "Good": "God",
+      "Moderate": "Måttlig",
+      "Poor": "Dålig",
+      "VeryPoor": "Mycket Dålig"
+    },
     
     "Settings": {
       "ControlLight": "Styr Omgivningsljus",
       "ControlLightHint": "Justera automatiskt scenens mörker baserat på tid på dygnet",
+      "AutoFXMaster": "Automatiska Vädereffekter (FXMaster)",
+      "AutoFXMasterHint": "Applicera automatiskt vädereffekter med FXMaster när tid/väder ändras (kräver FXMaster-modulen)",
       "WeatherFile": "Väderdatafil",
       "WeatherFileHint": "Välj vilken väderdatafil (JSON) som ska användas (måste finnas i weatherdata mappen)",
       "Altitude": "Höjd över havsytan (meter)",
