@@ -258,5 +258,55 @@
       {"shift": 5, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "SW", "windspeed": 9, "temp": -8},
       {"shift": 6, "weatherCode": "overcast", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 13, "temp": -13}
     ]
+  },
+  "2014-07-10": {
+    "shifts": [
+      {"shift": 1, "weatherCode": "snow", "windCode": "gale", "windDirection": "N", "windspeed": 23, "temp": -24},
+      {"shift": 2, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "N", "windspeed": 20, "temp": -21},
+      {"shift": 3, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "N", "windspeed": 16, "temp": -16},
+      {"shift": 4, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "NE", "windspeed": 12, "temp": -12},
+      {"shift": 5, "weatherCode": "overcast", "windCode": "fresh_breeze", "windDirection": "NE", "windspeed": 15, "temp": -14},
+      {"shift": 6, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "N", "windspeed": 21, "temp": -19}
+    ]
+  },
+  "2014-07-11": {
+    "shifts": [
+      {"shift": 1, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "NW", "windspeed": 18, "temp": -21},
+      {"shift": 2, "weatherCode": "snow", "windCode": "fresh_breeze", "windDirection": "NW", "windspeed": 15, "temp": -18},
+      {"shift": 3, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 11, "temp": -13},
+      {"shift": 4, "weatherCode": "overcast", "windCode": "gentle_breeze", "windDirection": "W", "windspeed": 9, "temp": -9},
+      {"shift": 5, "weatherCode": "cloudy", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 12, "temp": -11},
+      {"shift": 6, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "NW", "windspeed": 17, "temp": -16}
+    ]
+  },
+  "2014-07-12": {
+    "shifts": [
+      {"shift": 1, "weatherCode": "cloudy", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 14, "temp": -17},
+      {"shift": 2, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 11, "temp": -14},
+      {"shift": 3, "weatherCode": "overcast", "windCode": "gentle_breeze", "windDirection": "SW", "windspeed": 8, "temp": -9},
+      {"shift": 4, "weatherCode": "partly_cloudy", "windCode": "gentle_breeze", "windDirection": "S", "windspeed": 6, "temp": -5},
+      {"shift": 5, "weatherCode": "cloudy", "windCode": "moderate_breeze", "windDirection": "SW", "windspeed": 10, "temp": -7},
+      {"shift": 6, "weatherCode": "fog", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 13, "temp": -12}
+    ]
+  },
+  "2014-07-13": {
+    "shifts": [
+      {"shift": 1, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "NW", "windspeed": 19, "temp": -20},
+      {"shift": 2, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "NW", "windspeed": 16, "temp": -17},
+      {"shift": 3, "weatherCode": "fog", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 13, "temp": -12},
+      {"shift": 4, "weatherCode": "overcast", "windCode": "moderate_breeze", "windDirection": "W", "windspeed": 10, "temp": -8},
+      {"shift": 5, "weatherCode": "cloudy", "windCode": "fresh_breeze", "windDirection": "W", "windspeed": 14, "temp": -10},
+      {"shift": 6, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "NW", "windspeed": 17, "temp": -15}
+    ]
+  },
+  "2014-07-14": {
+    "shifts": [
+      {"shift": 1, "weatherCode": "snow", "windCode": "gale", "windDirection": "N", "windspeed": 22, "temp": -23},
+      {"shift": 2, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "N", "windspeed": 19, "temp": -20},
+      {"shift": 3, "weatherCode": "snow", "windCode": "strong_breeze", "windDirection": "N", "windspeed": 16, "temp": -15},
+      {"shift": 4, "weatherCode": "fog", "windCode": "moderate_breeze", "windDirection": "NE", "windspeed": 12, "temp": -11},
+      {"shift": 5, "weatherCode": "overcast", "windCode": "fresh_breeze", "windDirection": "NE", "windspeed": 15, "temp": -13},
+      {"shift": 6, "weatherCode": "snow", "windCode": "near_gale", "windDirection": "N", "windspeed": 20, "temp": -18}
+    ]
   }
 }

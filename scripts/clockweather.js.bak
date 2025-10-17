@@ -1,4 +1,4 @@
-// Clock & Weather version 1.3.1 Build 022
+// Clock & Weather version 1.3.1 Build 017
 // Fixed: Wind direction now shows as N, NE, E, SE etc instead of arrows
 // Fixed: FXMaster API integration
 
@@ -24,9 +24,6 @@ class ClockWeatherApp extends Application {
     const shiftName = this.getShiftName(shiftNumber);
     const weatherData = this.getWeatherForDateAndShift(currentDateTime.date, shiftNumber);
     const altitude = game.settings.get("clockweather", "altitude");
-    
-    // Check if weather effects are currently active
-    const fxActive = game.clockweather?.fxActive || false;
 
     return {
       ...data,
@@ -37,8 +34,7 @@ class ClockWeatherApp extends Application {
       weather: weatherData,
       altitude: altitude,
       isGM: game.user.isGM,
-      fxMasterEnabled: game.modules.get("fxmaster")?.active,
-      fxActive: fxActive
+      fxMasterEnabled: game.modules.get("fxmaster")?.active
     };
   }
 
@@ -321,34 +317,18 @@ class ClockWeatherApp extends Application {
     event.preventDefault();
     
     console.log("Clock & Weather | Toggle FX button clicked");
+    console.log("Clock & Weather | FXMaster active?", game.modules.get("fxmaster")?.active);
+    console.log("Clock & Weather | Ambient sound enabled?", game.settings.get("clockweather", "enableAmbientSound"));
+    console.log("Clock & Weather | Auto FXMaster enabled?", game.settings.get("clockweather", "autoFXMaster"));
     
     if (!game.modules.get("fxmaster")?.active) {
       ui.notifications.warn(game.i18n.localize("CLOCKWEATHER.FXMasterNotActive"));
       return;
     }
     
-    // Initialize clockweather object if needed
-    if (!game.clockweather) game.clockweather = {};
-    
-    // Toggle state
-    const isActive = game.clockweather.fxActive || false;
-    
-    if (isActive) {
-      // Turn OFF effects
-      console.log("Clock & Weather | Turning OFF weather effects...");
-      await this.clearAllWeatherEffects();
-      game.clockweather.fxActive = false;
-      ui.notifications.info(game.i18n.localize("CLOCKWEATHER.FXMasterDisabled"));
-    } else {
-      // Turn ON effects
-      console.log("Clock & Weather | Turning ON weather effects...");
-      await this.updateFXMaster();
-      game.clockweather.fxActive = true;
-      ui.notifications.info(game.i18n.localize("CLOCKWEATHER.FXMasterEnabled"));
-    }
-    
-    // Re-render to update button appearance
-    this.render();
+    console.log("Clock & Weather | Toggling FXMaster effects...");
+    await this.updateFXMaster();
+    ui.notifications.info(game.i18n.localize("CLOCKWEATHER.FXMasterUpdated"));
   }
 
   async _onPostToChat(event) {
@@ -370,7 +350,7 @@ class ClockWeatherApp extends Application {
         <p><strong>${game.i18n.localize("CLOCKWEATHER.Wind")}:</strong> ${weatherData.windCode} ${weatherData.windDirection} (${weatherData.windspeed} m/s)</p>
         <p><strong>${game.i18n.localize("CLOCKWEATHER.Temperature")}:</strong> ${weatherData.temp}°C</p>
         <p><strong>${game.i18n.localize("CLOCKWEATHER.FeelsLike")}:</strong> ${weatherData.feelsLike}°C</p>
-        <p><strong>${game.i18n.localize("CLOCKWEATHER.Visibility.Visibility")}:</strong> ${weatherData.visibilityText} (${weatherData.visibility}m)</p>
+        <p><strong>${game.i18n.localize("CLOCKWEATHER.Visibility")}:</strong> ${weatherData.visibilityText} (${weatherData.visibility}m)</p>
       </div>
     `;
     
@@ -505,10 +485,6 @@ class ClockWeatherApp extends Application {
     const windspeed = weatherData.windspeed;
     const environment = game.settings.get("clockweather", "soundEnvironment");
     
-    console.log("Clock & Weather | updateAmbientWeatherEffects called");
-    console.log("Clock & Weather | Weather code:", weatherCode);
-    console.log("Clock & Weather | Wind speed:", windspeed);
-    
     // Clear existing weather effects first
     await this.clearAmbientWeatherEffects();
     
@@ -518,186 +494,138 @@ class ClockWeatherApp extends Application {
       return;
     }
     
-    // Determine sound file and effects needed
+    // Determine sound file and if we need lights
     let soundFile = null;
-    let needsThunderstorm = false;
+    let needsLights = false;
     
     if (weatherCode.includes("thunder") || weatherCode.includes("typhoon")) {
-      needsThunderstorm = true;
-      soundFile = "modules/clockweather/sounds/rain.ogg"; // Background rain for thunderstorm
+      soundFile = "modules/clockweather/sounds/thunderstorm.ogg";
+      needsLights = true;
     } else if (weatherCode.includes("heavy_rain")) {
       soundFile = "modules/clockweather/sounds/heavy_rain.ogg";
     } else if (weatherCode.includes("rain")) {
       soundFile = "modules/clockweather/sounds/rain.ogg";
     } else if (weatherCode.includes("sandstorm") || weatherCode.includes("dust")) {
       soundFile = "modules/clockweather/sounds/sandstorm.ogg";
-    } else if (windspeed > 18) {
+    } else if (windspeed > 15) {
       soundFile = "modules/clockweather/sounds/strong_wind.ogg";
-    } else if (windspeed > 7 && windspeed <18) {
-      soundFile = "modules/clockweather/sounds/soft_wind.ogg";
     }
-    
     
     // At sea, override with wave sounds for stormy weather
     if (environment === "sea") {
-      if (windspeed > 7 && windspeed < 15) {
-        soundFile = "modules/clockweather/sounds/waves.ogg";
+      if (windspeed > 12 || weatherCode.includes("storm") || weatherCode.includes("typhoon")) {
+        soundFile = "modules/clockweather/sounds/large_waves.ogg";
       } else if (!weatherCode.includes("sandstorm") && !weatherCode.includes("dust")) {
-        soundFile = "modules/clockweather/sounds/waves.ogg"
-      } else if (weatherCode.includes("storm") || weatherCode.includes("typhoon")) {
-        soundFile = "modules/clockweather/sounds/rough-ocean-waves.ogg"
-      } 
-    }
-    
-    // Start background ambient sound
-    if (soundFile) {
-      console.log(`Clock & Weather | Starting ambient sound: ${soundFile}`);
-      try {
-        const ambientSound = await AudioHelper.play(
-          { src: soundFile, volume: 0.5, autoplay: true, loop: true },
-          true
-        );
-        
-        // Store in game object for easy cleanup
-        if (!game.clockweather) game.clockweather = {};
-        game.clockweather.ambientSound = ambientSound;
-        
-        console.log("Clock & Weather | ✓ Ambient sound started");
-      } catch (error) {
-        console.error(`Clock & Weather | Error playing sound ${soundFile}:`, error);
+        soundFile = "modules/clockweather/sounds/waves.ogg";
       }
     }
     
-    // Start thunderstorm effect if needed
-    if (needsThunderstorm) {
-      console.log("Clock & Weather | Starting thunderstorm effect");
-      this.startThunderstormEffect();
+    if (!soundFile) {
+      console.log("Clock & Weather | No ambient sound needed for current weather");
+      return;
     }
-  }
-
-  startThunderstormEffect() {
-    // Stop any existing storm
-    this.stopThunderstormEffect();
     
-    if (!game.clockweather) game.clockweather = {};
-    game.clockweather.stormActive = true;
+    console.log(`Clock & Weather | Creating ambient weather effects: ${soundFile}, lights: ${needsLights}`);
     
-    console.log("Clock & Weather | ⚡ Thunderstorm started");
+    // Calculate scene dimensions
+    const sceneWidth = canvas.scene.dimensions.width;
+    const sceneHeight = canvas.scene.dimensions.height;
+    const centerX = sceneWidth / 2;
+    const centerY = sceneHeight / 2;
     
-    // Thunder sound files configuration
-    const THUNDER_PATH = "modules/clockweather/sounds/";
-    const THUNDER_FILES = ["thunderstorm.ogg"]; // You can add more: thunder1.ogg, thunder2.ogg, etc.
+    // Calculate radius to cover entire scene from center
+    const radius = Math.sqrt(Math.pow(sceneWidth / 2, 2) + Math.pow(sceneHeight / 2, 2));
     
-    // Lightning settings
-    const MIN_DELAY = 200;
-    const MAX_DELAY = 900;
-    const MAX_RADIUS = 120;
-    const LIGHT_COLOR = "#c8e4ff";
-    const BASE_ALPHA = 0.6;
-    const MIN_INTERVAL = 8000;
-    const MAX_INTERVAL = 30000;
-    const THUNDER_VOLUME = 0.7;
-    
-    // Lightning and thunder function
-    const lightningAndThunder = async () => {
-      if (!game.clockweather?.stormActive) return;
+    if (needsLights) {
+      // Create 3 lightning light sources spread across scene
+      const lightPositions = [
+        { x: centerX, y: centerY * 0.5 },           // Top center
+        { x: centerX * 0.5, y: centerY * 1.5 },     // Bottom left
+        { x: centerX * 1.5, y: centerY * 1.5 }      // Bottom right
+      ];
       
-      const thunderFile = THUNDER_PATH + THUNDER_FILES[Math.floor(Math.random() * THUNDER_FILES.length)];
-      const delay = Math.floor(Math.random() * (MAX_DELAY - MIN_DELAY)) + MIN_DELAY;
-      const distanceFactor = 1 - delay / MAX_DELAY;
-      const radius = MAX_RADIUS * (0.4 + 0.6 * distanceFactor);
-      const alpha = BASE_ALPHA * (0.5 + 0.5 * distanceFactor);
+      for (let i = 0; i < lightPositions.length; i++) {
+        const pos = lightPositions[i];
+        
+        try {
+          await canvas.scene.createEmbeddedDocuments("AmbientLight", [{
+            x: pos.x,
+            y: pos.y,
+            config: {
+              dim: radius,
+              bright: 0,
+              color: "#ffffff",
+              alpha: 0.1,  // Very low base brightness
+              animation: {
+                type: "soundPulse",
+                speed: 5,
+                intensity: 5
+              },
+              walls: false  // Not constrained by walls
+            },
+            flags: {
+              clockweather: {
+                isWeatherEffect: true,
+                effectType: "lightning"
+              }
+            }
+          }]);
+          
+          console.log(`Clock & Weather | Created lightning light ${i + 1} at (${pos.x}, ${pos.y})`);
+        } catch (error) {
+          console.error(`Clock & Weather | Error creating light ${i + 1}:`, error);
+        }
+      }
       
-      // Random position on scene
-      const x = Math.random() * canvas.scene.width;
-      const y = Math.random() * canvas.scene.height;
+      // Create 3 ambient sound sources at the same positions
+      for (let i = 0; i < lightPositions.length; i++) {
+        const pos = lightPositions[i];
+        
+        try {
+          await canvas.scene.createEmbeddedDocuments("AmbientSound", [{
+            x: pos.x,
+            y: pos.y,
+            radius: radius,
+            path: soundFile,
+            volume: 1,
+            walls: false,  // Not constrained by walls
+            flags: {
+              clockweather: {
+                isWeatherEffect: true,
+                effectType: "thunder_sound"
+              }
+            }
+          }]);
+          
+          console.log(`Clock & Weather | Created thunder sound ${i + 1} at (${pos.x}, ${pos.y})`);
+        } catch (error) {
+          console.error(`Clock & Weather | Error creating sound ${i + 1}:`, error);
+        }
+      }
       
+    } else {
+      // Just create a single ambient sound in the center
       try {
-        // Create lightning light
-        const [lightDoc] = await canvas.scene.createEmbeddedDocuments("AmbientLight", [{
-          x, y,
-          config: {
-            dim: radius,
-            bright: radius * 0.6,
-            color: LIGHT_COLOR,
-            alpha: alpha,
-            animation: { type: "pulse", speed: 6, intensity: 6 },
-            walls: false
-          },
+        await canvas.scene.createEmbeddedDocuments("AmbientSound", [{
+          x: centerX,
+          y: centerY,
+          radius: radius,
+          path: soundFile,
+          volume: 0.5,
+          walls: false,  // Not constrained by walls
           flags: {
             clockweather: {
               isWeatherEffect: true,
-              effectType: "lightning"
+              effectType: "ambient_sound"
             }
           }
         }]);
         
-        const light = canvas.lighting.get(lightDoc.id);
-        
-        // Flash effect (2-3 flashes)
-        const flashes = Math.floor(2 + Math.random() * 2);
-        for (let i = 0; i < flashes; i++) {
-          await light.document.update({ hidden: false, "config.alpha": alpha });
-          await new Promise(r => setTimeout(r, 60 + Math.random() * 80));
-          await light.document.update({ hidden: true, "config.alpha": 0 });
-          await new Promise(r => setTimeout(r, 80 + Math.random() * 120));
-        }
-        
-        // Wait for thunder delay (simulates distance)
-        await new Promise(r => setTimeout(r, delay));
-        
-        // Play thunder sound
-        AudioHelper.play({ src: thunderFile, volume: THUNDER_VOLUME, autoplay: true, loop: false }, true);
-        
-        // Keep light a bit longer, then remove
-        await new Promise(r => setTimeout(r, 2000 + Math.random() * 1000));
-        await canvas.scene.deleteEmbeddedDocuments("AmbientLight", [light.id]);
-        
+        console.log(`Clock & Weather | Created ambient sound at center (${centerX}, ${centerY})`);
       } catch (error) {
-        console.error("Clock & Weather | Error creating lightning:", error);
-      }
-    };
-    
-    // Storm loop
-    (async function stormLoop() {
-      while (game.clockweather?.stormActive) {
-        await lightningAndThunder();
-        const next = Math.floor(Math.random() * (MAX_INTERVAL - MIN_INTERVAL)) + MIN_INTERVAL;
-        console.log(`Clock & Weather | ⏱️ Next lightning in ${Math.floor(next / 1000)} seconds`);
-        await new Promise(r => setTimeout(r, next));
-      }
-      console.log("Clock & Weather | ☀️ Thunderstorm stopped");
-    })();
-  }
-
-  stopThunderstormEffect() {
-    if (game.clockweather?.stormActive) {
-      game.clockweather.stormActive = false;
-      console.log("Clock & Weather | 🛑 Stopping thunderstorm...");
-    }
-  }
-
-  async clearAllWeatherEffects() {
-    console.log("Clock & Weather | Clearing ALL weather effects (FXMaster + Ambient)...");
-    
-    // Clear FXMaster particle effects
-    if (game.modules.get("fxmaster")?.active) {
-      const existingEffects = ["clockweather-rain", "clockweather-snow", "clockweather-fog", 
-                               "clockweather-lightning", "clockweather-leaves", "clockweather-dust"];
-      
-      for (const effectId of existingEffects) {
-        try {
-          await canvas.scene.unsetFlag("fxmaster", `effects.${effectId}`);
-        } catch (e) {
-          // Effect might not exist
-        }
+        console.error("Clock & Weather | Error creating ambient sound:", error);
       }
     }
-    
-    // Clear ambient weather effects (sounds and lights)
-    await this.clearAmbientWeatherEffects();
-    
-    console.log("Clock & Weather | ✓ All weather effects cleared");
   }
 
   async clearAmbientWeatherEffects() {
@@ -705,21 +633,7 @@ class ClockWeatherApp extends Application {
     
     console.log("Clock & Weather | Clearing ambient weather effects...");
     
-    // Stop thunderstorm
-    this.stopThunderstormEffect();
-    
-    // Stop ambient sound
-    if (game.clockweather?.ambientSound) {
-      try {
-        game.clockweather.ambientSound.stop();
-        game.clockweather.ambientSound = null;
-        console.log("Clock & Weather | ✓ Stopped ambient sound");
-      } catch (error) {
-        console.warn("Clock & Weather | Could not stop ambient sound:", error);
-      }
-    }
-    
-    // Find and delete all lightning lights created by clockweather
+    // Find and delete all lights created by clockweather
     const weatherLights = canvas.scene.lights.filter(light => 
       light.flags?.clockweather?.isWeatherEffect === true
     );
@@ -727,7 +641,115 @@ class ClockWeatherApp extends Application {
     if (weatherLights.length > 0) {
       const lightIds = weatherLights.map(l => l.id);
       await canvas.scene.deleteEmbeddedDocuments("AmbientLight", lightIds);
-      console.log(`Clock & Weather | ✓ Removed ${lightIds.length} weather lights`);
+      console.log(`Clock & Weather | Removed ${lightIds.length} weather lights`);
+    }
+    
+    // Find and delete all sounds created by clockweather
+    const weatherSounds = canvas.scene.sounds.filter(sound =>
+      sound.flags?.clockweather?.isWeatherEffect === true
+    );
+    
+    if (weatherSounds.length > 0) {
+      const soundIds = weatherSounds.map(s => s.id);
+      await canvas.scene.deleteEmbeddedDocuments("AmbientSound", soundIds);
+      console.log(`Clock & Weather | Removed ${soundIds.length} weather sounds`);
+    }
+  }
+
+  startAmbientLightning() {
+    // Stop existing lightning interval
+    this.stopAmbientLightning();
+    
+    console.log("Clock & Weather | Starting ambient lightning effects");
+    
+    // Random lightning flashes every 5-15 seconds
+    this._lightningInterval = setInterval(() => {
+      if (!canvas.scene) return;
+      
+      // Random lightning flash
+      const currentDarkness = canvas.scene.darkness;
+      const flashDuration = 100 + Math.random() * 200; // 100-300ms flash
+      
+      // Flash to brighter
+      canvas.scene.update({ darkness: Math.max(0, currentDarkness - 0.3) });
+      
+      // Return to normal after flash
+      setTimeout(() => {
+        canvas.scene.update({ darkness: currentDarkness });
+      }, flashDuration);
+      
+      // Sometimes double flash
+      if (Math.random() > 0.7) {
+        setTimeout(() => {
+          canvas.scene.update({ darkness: Math.max(0, currentDarkness - 0.2) });
+          setTimeout(() => {
+            canvas.scene.update({ darkness: currentDarkness });
+          }, 80);
+        }, flashDuration + 200);
+      }
+      
+    }, 5000 + Math.random() * 10000); // Random interval 5-15 seconds
+  }
+
+  stopAmbientLightning() {
+    if (this._lightningInterval) {
+      clearInterval(this._lightningInterval);
+      this._lightningInterval = null;
+      console.log("Clock & Weather | Stopped ambient lightning effects");
+    }
+  }
+
+  async updateAmbientSound(weatherData) {
+    const weatherCode = weatherData.rawWeatherCode || "";
+    const windspeed = weatherData.windspeed;
+    let soundFile = null;
+    let volume = 0.5;
+
+    // Determine which sound to play based on weather
+    if (weatherCode.includes("thunder")) {
+      soundFile = "modules/clockweather/sounds/thunderstorm.ogg";
+      volume = 0.7;
+    } else if (weatherCode.includes("heavy_rain")) {
+      soundFile = "modules/clockweather/sounds/heavy_rain.ogg";
+      volume = 0.6;
+    } else if (weatherCode.includes("rain")) {
+      soundFile = "modules/clockweather/sounds/rain.ogg";
+      volume = 0.5;
+    } else if (windspeed > 15) {
+      soundFile = "modules/clockweather/sounds/strong_wind.ogg";
+      volume = 0.4;
+    } else if (weatherCode.includes("sandstorm") || weatherCode.includes("dust")) {
+      soundFile = "modules/clockweather/sounds/sandstorm.ogg";
+      volume = 0.5;
+    }
+
+    // Stop current sound if it's different
+    if (this._currentSound && this._currentSoundFile !== soundFile) {
+      this._currentSound.stop();
+      this._currentSound = null;
+    }
+
+    // Play new sound if needed
+    if (soundFile && (!this._currentSound || this._currentSoundFile !== soundFile)) {
+      try {
+        console.log(`Clock & Weather | Playing ambient sound: ${soundFile}`);
+        this._currentSound = await AudioHelper.play({
+          src: soundFile,
+          volume: volume,
+          loop: true
+        }, false);
+        this._currentSoundFile = soundFile;
+      } catch (error) {
+        console.warn(`Clock & Weather | Could not play sound ${soundFile}:`, error);
+      }
+    }
+
+    // Stop sound if weather is calm
+    if (!soundFile && this._currentSound) {
+      this._currentSound.stop();
+      this._currentSound = null;
+      this._currentSoundFile = null;
+      console.log("Clock & Weather | Stopped ambient sound (calm weather)");
     }
   }
 
