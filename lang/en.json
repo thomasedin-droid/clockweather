@@ -11,7 +11,6 @@
     "WindDirection": "Wind Direction",
     "Temperature": "Temperature",
     "FeelsLike": "Feels Like",
-    "Visibility": "Visibility",
     "Altitude": "Altitude",
     "PostToChat": "Post to Chat",
     "PostedToChat": "Weather posted to chat!",
@@ -26,6 +25,10 @@
     "ToggleWeatherFX": "Toggle Weather Effects",
     "FXMasterNotActive": "FXMaster module is not active!",
     "FXMasterUpdated": "Weather effects updated!",
+    "FXMasterEnabled": "Weather effects enabled!",
+    "FXMasterDisabled": "Weather effects disabled!",
+    "FXOn": "FX: ON",
+    "FXOff": "FX: OFF",
     
     "Shift1": "Night Shift (00:00-04:00)",
     "Shift2": "Dawn Shift (04:00-08:00)",
@@ -50,7 +53,10 @@
       "fog": "Fog",
       "mist": "Mist",
       "fair": "Fair",
-      "clear": "Clear"
+      "clear": "Clear",
+      "dust_storm": "Dust Storm",
+      "sandstorm": "Sandstorm",
+      "typhoon": "Typhoon"
     },
     
     "Windtype": {
@@ -70,19 +76,18 @@
     },
 
     "WindDir": {
-      "title": "Direction",
-      "N": "N",
-      "NE": "NE",
-      "E": "E",
-      "SE": "SE",
-      "S": "S",
-      "SW": "SW",
-      "W": "W",
-      "NW": "NW"
+      "N": "North",
+      "NE": "Northeast",
+      "E": "East",
+      "SE": "Southeast",
+      "S": "South",
+      "SW": "Southwest",
+      "W": "West",
+      "NW": "Northwest"
     },
 
     "Visibility": {
-      "Title": "Visibility",
+      "Visibility": "Visibility",
       "Excellent": "Excellent",
       "Good": "Good",
       "Moderate": "Moderate",
@@ -95,6 +100,12 @@
       "ControlLightHint": "Automatically adjust scene darkness based on time of day",
       "AutoFXMaster": "Auto Weather Effects (FXMaster)",
       "AutoFXMasterHint": "Automatically apply weather effects using FXMaster when time/weather changes (requires FXMaster module)",
+      "EnableSound": "Enable Ambient Weather Sounds",
+      "EnableSoundHint": "Place ambient sound sources on the scene based on weather conditions",
+      "SoundEnvironment": "Sound Environment",
+      "SoundEnvironmentHint": "Choose between land or sea ambient sounds",
+      "OnLand": "On Land",
+      "AtSea": "At Sea",
       "WeatherFile": "Weather Data File",
       "WeatherFileHint": "Select the weather data JSON file to use (must be in weatherdata folder)",
       "Altitude": "Altitude Above Sea Level (meters)",

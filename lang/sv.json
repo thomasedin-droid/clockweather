@@ -26,6 +26,10 @@
     "ToggleWeatherFX": "Växla Vädereffekter",
     "FXMasterNotActive": "FXMaster-modulen är inte aktiv!",
     "FXMasterUpdated": "Vädereffekter uppdaterade!",
+    "FXMasterEnabled": "Vädereffekter aktiverade!",
+    "FXMasterDisabled": "Vädereffekter inaktiverade!",
+    "FXOn": "FX: PÅ",
+    "FXOff": "FX: AV",
     
     "Shift1": "Nattskift (00:00-04:00)",
     "Shift2": "Gryningsskift (04:00-08:00)",
@@ -50,7 +54,10 @@
       "fog": "Dimma",
       "mist": "Dis",
       "fair": "Klart",
-      "clear": "Klart"
+      "clear": "Klart",
+      "dust_storm": "Dammstorm",
+      "sandstorm": "Sandstorm",
+      "typhoon": "Tyfon"
     },
     
     "Windtype": {
@@ -70,19 +77,17 @@
     },
 
     "WindDir": {
-      "title": "Riktning",
-      "N": "N",
-      "NE": "NO",
-      "E": "O",
-      "SE": "SO",
-      "S": "S",
-      "SW": "SV",
-      "W": "V",
-      "NW": "NV"
+      "N": "Nord",
+      "NE": "Nordost",
+      "E": "Ost",
+      "SE": "Sydost",
+      "S": "Syd",
+      "SW": "Sydväst",
+      "W": "Väst",
+      "NW": "Nordväst"
     },
 
     "Visibility": {
-      "Title": "Sikt"
       "Excellent": "Utmärkt",
       "Good": "God",
       "Moderate": "Måttlig",
@@ -95,6 +100,12 @@
       "ControlLightHint": "Justera automatiskt scenens mörker baserat på tid på dygnet",
       "AutoFXMaster": "Automatiska Vädereffekter (FXMaster)",
       "AutoFXMasterHint": "Applicera automatiskt vädereffekter med FXMaster när tid/väder ändras (kräver FXMaster-modulen)",
+      "EnableSound": "Aktivera Ambient Väderljud",
+      "EnableSoundHint": "Placera ut ambient ljudkällor på scenen baserat på väderförhållanden",
+      "SoundEnvironment": "Ljudmiljö",
+      "SoundEnvironmentHint": "Välj mellan land eller hav för ambient ljud",
+      "OnLand": "På Land",
+      "AtSea": "Till Havs",
       "WeatherFile": "Väderdatafil",
       "WeatherFileHint": "Välj vilken väderdatafil (JSON) som ska användas (måste finnas i weatherdata mappen)",
       "Altitude": "Höjd över havsytan (meter)",

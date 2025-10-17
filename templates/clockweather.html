@@ -1,4 +1,4 @@
-<!-- Build 006 - Added wind direction, visibility, and FXMaster toggle -->
+<!-- Build 007 - Added wind direction, visibility, and FXMaster toggle -->
 
 <div class="clockweather-container">
   <div class="clockweather-content">
@@ -69,7 +69,7 @@
           <div class="weather-content">
             <span class="weather-label">{{localize "CLOCKWEATHER.Wind"}}</span>
             <span class="weather-value">
-              {{weather.windCode}} - {{weather.windDirection}} - ({{weather.windspeed}} m/s)
+              {{weather.windCode}} {{weather.windDirection}} ({{weather.windspeed}} m/s)
             </span>
           </div>
         </div>
@@ -93,7 +93,7 @@
         <div class="weather-item">
           <i class="fas fa-eye weather-icon"></i>
           <div class="weather-content">
-            <span class="weather-label">{{localize "CLOCKWEATHER.Visibility.Title"}}</span>
+            <span class="weather-label">{{localize "CLOCKWEATHER.Visibility.Visibility"}}</span>
             <span class="weather-value">{{weather.visibilityText}} ({{weather.visibility}}m)</span>
           </div>
         </div>
@@ -106,8 +106,13 @@
           <i class="fas fa-comment"></i> {{localize "CLOCKWEATHER.PostToChat"}}
         </button>
         {{#if fxMasterEnabled}}
-          <button class="toggle-fx compact" title="{{localize 'CLOCKWEATHER.ToggleWeatherFX'}}">
-            <i class="fas fa-sparkles"></i> {{localize "CLOCKWEATHER.ToggleWeatherFX"}}
+          <button class="toggle-fx compact {{#if fxActive}}fx-active{{/if}}" title="{{localize 'CLOCKWEATHER.ToggleWeatherFX'}}">
+            <i class="fas fa-sparkles"></i> 
+            {{#if fxActive}}
+              {{localize "CLOCKWEATHER.FXOn"}}
+            {{else}}
+              {{localize "CLOCKWEATHER.FXOff"}}
+            {{/if}}
           </button>
         {{/if}}
         <button class="save-datetime compact">
