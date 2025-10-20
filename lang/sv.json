@@ -11,7 +11,6 @@
     "WindDirection": "Vindriktning",
     "Temperature": "Temperatur",
     "FeelsLike": "Känns Som",
-    "Visibility": "Sikt",
     "Altitude": "Höjd",
     "PostToChat": "Skicka till Chatt",
     "PostedToChat": "Väder skickat till chatten!",
@@ -88,6 +87,7 @@
     },
 
     "Visibility": {
+      "Visibility": "Sikt",
       "Excellent": "Utmärkt",
       "Good": "God",
       "Moderate": "Måttlig",
