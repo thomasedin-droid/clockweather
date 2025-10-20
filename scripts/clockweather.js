@@ -1,35 +1,46 @@
-// Clock & Weather version 1.3.1 Build 022
-// Fixed: Wind direction now shows as N, NE, E, SE etc instead of arrows
-// Fixed: FXMaster API integration
+// Clock & Weather version 2.0.0 Build 001
+// Major upgrade: ApplicationV2, Foundry v13+ compatible
+// Removed all deprecated APIs
 
-console.log("Clock & Weather | Script loaded");
+console.log("Clock & Weather | Script loaded (v2.0.0)");
 
-class ClockWeatherApp extends Application {
-  static get defaultOptions() {
-    return foundry.utils.mergeObject(super.defaultOptions, {
+class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixin(
+  foundry.applications.api.ApplicationV2
+) {
+  static get DEFAULT_OPTIONS() {
+    return {
       id: "clockweather-app",
-      title: game.i18n.localize("CLOCKWEATHER.Title"),
-      template: "modules/clockweather/templates/clockweather.html",
-      width: 500,
-      height: "auto",
-      resizable: true,
-      classes: ["clockweather"]
-    });
+      classes: ["clockweather"],
+      tag: "div",
+      window: {
+        title: "CLOCKWEATHER.Title",
+        icon: "fas fa-cloud-sun",
+        resizable: true
+      },
+      position: {
+        width: 500,
+        height: "auto"
+      }
+    };
   }
 
-  getData() {
-    const data = super.getData();
+  static get PARTS() {
+    return {
+      form: {
+        template: "modules/clockweather/templates/clockweather.html"
+      }
+    };
+  }
+
+  async _prepareContext(options) {
     const currentDateTime = this.getCurrentDateTime();
     const shiftNumber = this.calculateShiftNumber(currentDateTime.time);
     const shiftName = this.getShiftName(shiftNumber);
     const weatherData = this.getWeatherForDateAndShift(currentDateTime.date, shiftNumber);
     const altitude = game.settings.get("clockweather", "altitude");
-    
-    // Check if weather effects are currently active
-    const fxActive = game.clockweather?.fxActive || false;
+    const fxActive = game.settings.get("clockweather", "fxActive");
 
     return {
-      ...data,
       date: currentDateTime.date,
       time: currentDateTime.time,
       shift: shiftName,
@@ -70,11 +81,6 @@ class ClockWeatherApp extends Application {
 
   getShiftName(shiftNumber) {
     return game.i18n.localize(`CLOCKWEATHER.Shift${shiftNumber}`);
-  }
-
-  calculateShift(time) {
-    const shiftNumber = this.calculateShiftNumber(time);
-    return this.getShiftName(shiftNumber);
   }
 
   getWeatherData() {
@@ -134,8 +140,7 @@ class ClockWeatherApp extends Application {
   }
 
   calculateVisibility(weatherCode, windspeed) {
-    // Beräkna sikt i meter baserat på väderförhållanden
-    let baseVisibility = 10000; // 10km i klart väder
+    let baseVisibility = 10000;
     
     switch(weatherCode) {
       case "clear_sky":
@@ -172,7 +177,6 @@ class ClockWeatherApp extends Application {
         break;
     }
     
-    // Stark vind kan minska sikten ytterligare
     if (windspeed > 15) {
       baseVisibility = Math.min(baseVisibility, baseVisibility * 0.7);
     }
@@ -189,19 +193,16 @@ class ClockWeatherApp extends Application {
   }
 
   calculateFeelsLike(temp, windspeed) {
-    // Vindkyleffekt (Wind Chill) - fungerar bäst under 10°C
     if (temp <= 10 && windspeed > 4.8) {
       const windKmh = windspeed * 3.6;
       const windChill = 13.12 + 0.6215 * temp - 11.37 * Math.pow(windKmh, 0.16) + 0.3965 * temp * Math.pow(windKmh, 0.16);
       return Math.round(windChill);
     }
     
-    // Heat index för varmare väder (förenklad version)
     if (temp > 27 && windspeed < 3) {
       return Math.round(temp + 2);
     }
     
-    // Lätt påverkan av vind vid måttliga temperaturer
     if (windspeed > 8) {
       return Math.round(temp - 1);
     }
@@ -209,28 +210,116 @@ class ClockWeatherApp extends Application {
     return Math.round(temp);
   }
 
-  getWeatherForDate(date) {
-    // Behåll för bakåtkompatibilitet
-    const shiftNumber = this.calculateShiftNumber(this.getCurrentDateTime().time);
-    return this.getWeatherForDateAndShift(date, shiftNumber);
+  _onRender(context, options) {
+    super._onRender(context, options);
+    
+    const html = this.element;
+    
+    console.log("Clock & Weather | _onRender called");
+    console.log("Clock & Weather | Element:", html);
+    
+    // Store app reference
+    const app = this;
+    
+    // Time advance buttons (using CLASS selector, not data-action)
+    const advanceButtons = html.querySelectorAll('.time-advance');
+    console.log("Clock & Weather | Found advance buttons:", advanceButtons.length);
+    
+    advanceButtons.forEach(btn => {
+      console.log("Clock & Weather | Attaching listener to button:", btn, "hours:", btn.dataset.hours);
+      btn.addEventListener('click', async (e) => {
+        console.log("Clock & Weather | BUTTON CLICKED!");
+        e.preventDefault();
+        e.stopPropagation();
+        const hours = parseInt(btn.dataset.hours) || 0;
+        console.log("Clock & Weather | Advance time button clicked:", hours);
+        await app._advanceTime(hours);
+      });
+    });
+    
+    // Date input (using CLASS selector)
+    const dateInput = html.querySelector('.date-input');
+    console.log("Clock & Weather | Found date input:", dateInput);
+    if (dateInput) {
+      dateInput.addEventListener('change', async (e) => {
+        console.log("Clock & Weather | Date changed:", e.target.value);
+        await app._changeDate(e.target.value);
+      });
+    }
+    
+    // Time input (using CLASS selector)
+    const timeInput = html.querySelector('.time-input');
+    console.log("Clock & Weather | Found time input:", timeInput);
+    if (timeInput) {
+      timeInput.addEventListener('change', async (e) => {
+        console.log("Clock & Weather | Time changed:", e.target.value);
+        await app._changeTime(e.target.value);
+      });
+    }
+    
+    // Altitude slider (using CLASS selector)
+    const altitudeSlider = html.querySelector('.altitude-slider');
+    console.log("Clock & Weather | Found altitude slider:", altitudeSlider);
+    if (altitudeSlider) {
+      // Real-time display update
+      altitudeSlider.addEventListener('input', (e) => {
+        const newAltitude = parseInt(e.target.value) || 0;
+        const label = html.querySelector('.altitude-value');
+        if (label) label.textContent = `${newAltitude}m`;
+      });
+      
+      // Save on change
+      altitudeSlider.addEventListener('change', async (e) => {
+        const newAltitude = parseInt(e.target.value) || 0;
+        console.log("Clock & Weather | Altitude changed:", newAltitude);
+        await game.settings.set("clockweather", "altitude", newAltitude);
+        app.render();
+      });
+    }
+    
+    // Post to chat button (using CLASS selector)
+    const chatBtn = html.querySelector('.post-to-chat');
+    console.log("Clock & Weather | Found chat button:", chatBtn);
+    if (chatBtn) {
+      chatBtn.addEventListener('click', async (e) => {
+        console.log("Clock & Weather | CHAT BUTTON CLICKED!");
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("Clock & Weather | Post to chat clicked");
+        await app._postToChat();
+      });
+    }
+    
+    // Toggle FX button (using CLASS selector)
+    const fxBtn = html.querySelector('.toggle-fx');
+    console.log("Clock & Weather | Found FX button:", fxBtn);
+    if (fxBtn) {
+      fxBtn.addEventListener('click', async (e) => {
+        console.log("Clock & Weather | FX BUTTON CLICKED!");
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("Clock & Weather | Toggle FX clicked");
+        await app._toggleFX();
+      });
+    }
+    
+    // Save button (using CLASS selector)
+    const saveBtn = html.querySelector('.save-datetime');
+    console.log("Clock & Weather | Found save button:", saveBtn);
+    if (saveBtn) {
+      saveBtn.addEventListener('click', async (e) => {
+        console.log("Clock & Weather | SAVE BUTTON CLICKED!");
+        e.preventDefault();
+        e.stopPropagation();
+        ui.notifications.info(game.i18n.localize("CLOCKWEATHER.Saved"));
+      });
+    }
+    
+    console.log("Clock & Weather | Finished attaching listeners");
   }
 
-  activateListeners(html) {
-    super.activateListeners(html);
-
-    html.find('.time-advance').click(this._onAdvanceTime.bind(this));
-    html.find('.save-datetime').click(this._onSaveDateTime.bind(this));
-    html.find('.date-input').change(this._onDateChange.bind(this));
-    html.find('.time-input').change(this._onTimeChange.bind(this));
-    html.find('.altitude-slider').on('input', this._onAltitudeInput.bind(this));
-    html.find('.altitude-slider').change(this._onAltitudeChange.bind(this));
-    html.find('.post-to-chat').click(this._onPostToChat.bind(this));
-    html.find('.toggle-fx').click(this._onToggleFX.bind(this));
-  }
-
-  async _onAdvanceTime(event) {
-    event.preventDefault();
-    const hours = parseInt(event.currentTarget.dataset.hours) || 0;
+  async _advanceTime(hours) {
+    console.log("Clock & Weather | _advanceTime called with", hours);
     
     const current = this.getCurrentDateTime();
     const [h, m] = current.time.split(':').map(Number);
@@ -251,6 +340,8 @@ class ClockWeatherApp extends Application {
 
     const newTime = `${String(newHours).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
     
+    console.log("Clock & Weather | New date/time:", newDate, newTime);
+    
     await game.settings.set("clockweather", "currentDateTime", {
       date: newDate,
       time: newTime
@@ -258,21 +349,16 @@ class ClockWeatherApp extends Application {
 
     this.updateAmbientLighting(newTime);
     
-    // Uppdatera FXMaster om aktiverat
-    if (game.settings.get("clockweather", "autoFXMaster")) {
+    if (game.settings.get("clockweather", "autoFXMaster") && game.settings.get("clockweather", "fxActive")) {
       await this.updateFXMaster();
     }
     
     this.render();
   }
 
-  async _onSaveDateTime(event) {
-    event.preventDefault();
-    ui.notifications.info(game.i18n.localize("CLOCKWEATHER.Saved"));
-  }
-
-  async _onDateChange(event) {
-    const newDate = event.target.value;
+  async _changeDate(newDate) {
+    console.log("Clock & Weather | _changeDate called with", newDate);
+    
     const current = this.getCurrentDateTime();
     
     await game.settings.set("clockweather", "currentDateTime", {
@@ -280,15 +366,16 @@ class ClockWeatherApp extends Application {
       time: current.time
     });
     
-    if (game.settings.get("clockweather", "autoFXMaster")) {
+    if (game.settings.get("clockweather", "autoFXMaster") && game.settings.get("clockweather", "fxActive")) {
       await this.updateFXMaster();
     }
     
     this.render();
   }
 
-  async _onTimeChange(event) {
-    const newTime = event.target.value;
+  async _changeTime(newTime) {
+    console.log("Clock & Weather | _changeTime called with", newTime);
+    
     const current = this.getCurrentDateTime();
     
     await game.settings.set("clockweather", "currentDateTime", {
@@ -298,61 +385,42 @@ class ClockWeatherApp extends Application {
     
     this.updateAmbientLighting(newTime);
     
-    if (game.settings.get("clockweather", "autoFXMaster")) {
+    if (game.settings.get("clockweather", "autoFXMaster") && game.settings.get("clockweather", "fxActive")) {
       await this.updateFXMaster();
     }
     
     this.render();
   }
 
-  _onAltitudeInput(event) {
-    // Uppdatera visningen i realtid när slidern dras
-    const newAltitude = parseInt(event.target.value) || 0;
-    $(event.target).siblings('label').find('.altitude-value').text(`${newAltitude}m`);
-  }
-
-  async _onAltitudeChange(event) {
-    const newAltitude = parseInt(event.target.value) || 0;
-    await game.settings.set("clockweather", "altitude", newAltitude);
-    this.render();
-  }
-
-  async _onToggleFX(event) {
-    event.preventDefault();
-    
-    console.log("Clock & Weather | Toggle FX button clicked");
+  async _toggleFX() {
+    console.log("Clock & Weather | _toggleFX called");
     
     if (!game.modules.get("fxmaster")?.active) {
       ui.notifications.warn(game.i18n.localize("CLOCKWEATHER.FXMasterNotActive"));
       return;
     }
     
-    // Initialize clockweather object if needed
-    if (!game.clockweather) game.clockweather = {};
+    const isActive = game.settings.get("clockweather", "fxActive");
     
-    // Toggle state
-    const isActive = game.clockweather.fxActive || false;
+    console.log("Clock & Weather | Current FX state:", isActive);
     
     if (isActive) {
-      // Turn OFF effects
       console.log("Clock & Weather | Turning OFF weather effects...");
       await this.clearAllWeatherEffects();
-      game.clockweather.fxActive = false;
+      await game.settings.set("clockweather", "fxActive", false);
       ui.notifications.info(game.i18n.localize("CLOCKWEATHER.FXMasterDisabled"));
     } else {
-      // Turn ON effects
       console.log("Clock & Weather | Turning ON weather effects...");
       await this.updateFXMaster();
-      game.clockweather.fxActive = true;
+      await game.settings.set("clockweather", "fxActive", true);
       ui.notifications.info(game.i18n.localize("CLOCKWEATHER.FXMasterEnabled"));
     }
     
-    // Re-render to update button appearance
     this.render();
   }
 
-  async _onPostToChat(event) {
-    event.preventDefault();
+  async _postToChat() {
+    console.log("Clock & Weather | _postToChat called");
     
     const currentDateTime = this.getCurrentDateTime();
     const shiftNumber = this.calculateShiftNumber(currentDateTime.time);
@@ -377,8 +445,7 @@ class ClockWeatherApp extends Application {
     await ChatMessage.create({
       user: game.user.id,
       speaker: ChatMessage.getSpeaker(),
-      content: chatContent,
-      style: CONST.CHAT_MESSAGE_STYLES.OTHER
+      content: chatContent
     });
     
     ui.notifications.info(game.i18n.localize("CLOCKWEATHER.PostedToChat"));
@@ -408,9 +475,6 @@ class ClockWeatherApp extends Application {
 
   async updateFXMaster() {
     console.log("Clock & Weather | === updateFXMaster START ===");
-    console.log("Clock & Weather | FXMaster active?", game.modules.get("fxmaster")?.active);
-    console.log("Clock & Weather | User is GM?", game.user.isGM);
-    console.log("Clock & Weather | Canvas scene exists?", !!canvas.scene);
     
     if (!game.modules.get("fxmaster")?.active) {
       console.warn("Clock & Weather | FXMaster module is not active");
@@ -427,8 +491,6 @@ class ClockWeatherApp extends Application {
       return;
     }
 
-    console.log("Clock & Weather | Updating FXMaster effects...");
-
     const currentDateTime = this.getCurrentDateTime();
     const shiftNumber = this.calculateShiftNumber(currentDateTime.time);
     const weatherData = this.getWeatherForDateAndShift(currentDateTime.date, shiftNumber);
@@ -436,35 +498,24 @@ class ClockWeatherApp extends Application {
     console.log("Clock & Weather | Current weather data:", weatherData);
 
     try {
-      // Clear existing weather effects first
-      console.log("Clock & Weather | Clearing existing ClockWeather effects...");
-      
-      // Remove previous ClockWeather particle effects by setting them to null/undefined
-      // FXMaster doesn't understand type: "off", we need to actually remove the flag
+      // Clear existing particle effects
       const existingEffects = ["clockweather-rain", "clockweather-snow", "clockweather-fog", 
-                               "clockweather-lightning", "clockweather-leaves", "clockweather-dust"];
+                               "clockweather-leaves", "clockweather-dust"];
       
       for (const effectId of existingEffects) {
-        console.log(`Clock & Weather | Removing effect flag: ${effectId}`);
         try {
-          // Remove the effect by unsetting the flag completely
           await canvas.scene.unsetFlag("fxmaster", `effects.${effectId}`);
         } catch (e) {
-          // Effect might not exist, that's OK
-          console.log(`Clock & Weather | Effect ${effectId} didn't exist or couldn't be removed`);
+          // Effect might not exist
         }
       }
 
-      // Get weather effects to apply
+      // Get and apply new effects
       const effects = this.getWeatherEffects(weatherData);
       console.log("Clock & Weather | Effects to apply:", effects);
 
-      // Apply new effects using FXMaster Hooks
       for (const effect of effects) {
         try {
-          console.log(`Clock & Weather | Calling fxmaster.switchParticleEffect for ${effect.type}`);
-          console.log(`Clock & Weather | Effect options:`, effect.options);
-          
           Hooks.call("fxmaster.switchParticleEffect", {
             name: `clockweather-${effect.type}`,
             type: effect.type,
@@ -472,21 +523,15 @@ class ClockWeatherApp extends Application {
           });
           
           console.log(`Clock & Weather | ✓ Applied ${effect.type}`);
-          
         } catch (error) {
           console.error(`Clock & Weather | Error applying effect ${effect.type}:`, error);
         }
       }
 
       // Handle ambient sounds and lights
-      const ambientSoundEnabled = game.settings.get("clockweather", "enableAmbientSound");
-      console.log("Clock & Weather | Ambient sound enabled?", ambientSoundEnabled);
-      
-      if (ambientSoundEnabled) {
-        console.log("Clock & Weather | Updating ambient weather effects...");
+      if (game.settings.get("clockweather", "enableAmbientSound")) {
         await this.updateAmbientWeatherEffects(weatherData);
       } else {
-        console.log("Clock & Weather | Clearing ambient weather effects...");
         await this.clearAmbientWeatherEffects();
       }
 
@@ -494,7 +539,11 @@ class ClockWeatherApp extends Application {
       
     } catch (error) {
       console.error("Clock & Weather | Error updating FXMaster:", error);
-      ui.notifications.error(`FXMaster error: ${error.message}`);
+      foundry.applications.api.DialogV2.prompt({
+        window: { title: "Error" },
+        content: `<p>FXMaster error: ${error.message}</p>`,
+        ok: { label: "OK" }
+      });
     }
   }
 
@@ -506,77 +555,64 @@ class ClockWeatherApp extends Application {
     const environment = game.settings.get("clockweather", "soundEnvironment");
     
     console.log("Clock & Weather | updateAmbientWeatherEffects called");
-    console.log("Clock & Weather | Weather code:", weatherCode);
-    console.log("Clock & Weather | Wind speed:", windspeed);
+    console.log("Clock & Weather | Weather:", weatherCode, "Wind:", windspeed);
     
-    // Clear existing weather effects first
     await this.clearAmbientWeatherEffects();
     
-    // Don't add sounds for snow (it's silent)
-    if (weatherCode.includes("snow")) {
-      console.log("Clock & Weather | Snow weather - no ambient sounds");
-      return;
-    }
-    
-    // Determine sound file and effects needed
     let soundFile = null;
     let needsThunderstorm = false;
     
     if (weatherCode.includes("thunder") || weatherCode.includes("typhoon")) {
       needsThunderstorm = true;
-      soundFile = "modules/clockweather/sounds/rain.ogg"; // Background rain for thunderstorm
+      soundFile = "modules/clockweather/sounds/heavy_rain.ogg";
     } else if (weatherCode.includes("heavy_rain")) {
       soundFile = "modules/clockweather/sounds/heavy_rain.ogg";
     } else if (weatherCode.includes("rain")) {
       soundFile = "modules/clockweather/sounds/rain.ogg";
     } else if (weatherCode.includes("sandstorm") || weatherCode.includes("dust")) {
       soundFile = "modules/clockweather/sounds/sandstorm.ogg";
-    } else if (windspeed > 18) {
-      soundFile = "modules/clockweather/sounds/strong_wind.ogg";
-    } else if (windspeed > 7 && windspeed <18) {
+    } else if (windspeed > 7 && windspeed < 16) {
       soundFile = "modules/clockweather/sounds/soft_wind.ogg";
+    } else if (windspeed >= 16) {
+      soundFile = "modules/clockweather/sounds/strong_wind.ogg";
     }
     
-    
-    // At sea, override with wave sounds for stormy weather
+    // Sea environment overrides
     if (environment === "sea") {
-      if (windspeed > 7 && windspeed < 15) {
-        soundFile = "modules/clockweather/sounds/waves.ogg";
+      if (windspeed > 19 || weatherCode.includes("storm") || weatherCode.includes("typhoon")) {
+        soundFile = "modules/clockweather/sounds/large_waves.ogg";
+      } else if (windspeed > 7 && windspeed < 19) {
+        soundFile = "modules/clockweather/sounds/waves_02.ogg";
       } else if (!weatherCode.includes("sandstorm") && !weatherCode.includes("dust")) {
-        soundFile = "modules/clockweather/sounds/waves.ogg"
-      } else if (weatherCode.includes("storm") || weatherCode.includes("typhoon")) {
-        soundFile = "modules/clockweather/sounds/rough-ocean-waves.ogg"
-      } 
+        soundFile = "modules/clockweather/sounds/waves.ogg";
+      }
     }
     
-    // Start background ambient sound
+    // Start ambient sound
     if (soundFile) {
       console.log(`Clock & Weather | Starting ambient sound: ${soundFile}`);
       try {
-        const ambientSound = await AudioHelper.play(
-          { src: soundFile, volume: 0.5, autoplay: true, loop: true },
+        const ambientSound = await foundry.audio.AudioHelper.play(
+          { src: soundFile, volume: 0.3, loop: true },
           true
         );
         
-        // Store in game object for easy cleanup
         if (!game.clockweather) game.clockweather = {};
         game.clockweather.ambientSound = ambientSound;
         
         console.log("Clock & Weather | ✓ Ambient sound started");
       } catch (error) {
-        console.error(`Clock & Weather | Error playing sound ${soundFile}:`, error);
+        console.error(`Clock & Weather | Error playing sound:`, error);
       }
     }
     
-    // Start thunderstorm effect if needed
     if (needsThunderstorm) {
-      console.log("Clock & Weather | Starting thunderstorm effect");
+      console.log("Clock & Weather | Starting thunderstorm");
       this.startThunderstormEffect();
     }
   }
 
   startThunderstormEffect() {
-    // Stop any existing storm
     this.stopThunderstormEffect();
     
     if (!game.clockweather) game.clockweather = {};
@@ -584,11 +620,8 @@ class ClockWeatherApp extends Application {
     
     console.log("Clock & Weather | ⚡ Thunderstorm started");
     
-    // Thunder sound files configuration
     const THUNDER_PATH = "modules/clockweather/sounds/";
-    const THUNDER_FILES = ["thunderstorm.ogg"]; // You can add more: thunder1.ogg, thunder2.ogg, etc.
-    
-    // Lightning settings
+    const THUNDER_FILES = ["thunderstorm.ogg"];
     const MIN_DELAY = 200;
     const MAX_DELAY = 900;
     const MAX_RADIUS = 120;
@@ -598,7 +631,6 @@ class ClockWeatherApp extends Application {
     const MAX_INTERVAL = 30000;
     const THUNDER_VOLUME = 0.7;
     
-    // Lightning and thunder function
     const lightningAndThunder = async () => {
       if (!game.clockweather?.stormActive) return;
       
@@ -608,12 +640,10 @@ class ClockWeatherApp extends Application {
       const radius = MAX_RADIUS * (0.4 + 0.6 * distanceFactor);
       const alpha = BASE_ALPHA * (0.5 + 0.5 * distanceFactor);
       
-      // Random position on scene
       const x = Math.random() * canvas.scene.width;
       const y = Math.random() * canvas.scene.height;
       
       try {
-        // Create lightning light
         const [lightDoc] = await canvas.scene.createEmbeddedDocuments("AmbientLight", [{
           x, y,
           config: {
@@ -634,7 +664,6 @@ class ClockWeatherApp extends Application {
         
         const light = canvas.lighting.get(lightDoc.id);
         
-        // Flash effect (2-3 flashes)
         const flashes = Math.floor(2 + Math.random() * 2);
         for (let i = 0; i < flashes; i++) {
           await light.document.update({ hidden: false, "config.alpha": alpha });
@@ -643,13 +672,10 @@ class ClockWeatherApp extends Application {
           await new Promise(r => setTimeout(r, 80 + Math.random() * 120));
         }
         
-        // Wait for thunder delay (simulates distance)
         await new Promise(r => setTimeout(r, delay));
         
-        // Play thunder sound
-        AudioHelper.play({ src: thunderFile, volume: THUNDER_VOLUME, autoplay: true, loop: false }, true);
+        foundry.audio.AudioHelper.play({ src: thunderFile, volume: THUNDER_VOLUME, loop: false }, true);
         
-        // Keep light a bit longer, then remove
         await new Promise(r => setTimeout(r, 2000 + Math.random() * 1000));
         await canvas.scene.deleteEmbeddedDocuments("AmbientLight", [light.id]);
         
@@ -658,12 +684,11 @@ class ClockWeatherApp extends Application {
       }
     };
     
-    // Storm loop
     (async function stormLoop() {
       while (game.clockweather?.stormActive) {
         await lightningAndThunder();
         const next = Math.floor(Math.random() * (MAX_INTERVAL - MIN_INTERVAL)) + MIN_INTERVAL;
-        console.log(`Clock & Weather | ⏱️ Next lightning in ${Math.floor(next / 1000)} seconds`);
+        console.log(`Clock & Weather | ⏱️ Next lightning in ${Math.floor(next / 1000)}s`);
         await new Promise(r => setTimeout(r, next));
       }
       console.log("Clock & Weather | ☀️ Thunderstorm stopped");
@@ -673,53 +698,44 @@ class ClockWeatherApp extends Application {
   stopThunderstormEffect() {
     if (game.clockweather?.stormActive) {
       game.clockweather.stormActive = false;
-      console.log("Clock & Weather | 🛑 Stopping thunderstorm...");
+      console.log("Clock & Weather | 🛑 Stopping thunderstorm");
     }
   }
 
   async clearAllWeatherEffects() {
-    console.log("Clock & Weather | Clearing ALL weather effects (FXMaster + Ambient)...");
+    console.log("Clock & Weather | Clearing ALL weather effects");
     
-    // Clear FXMaster particle effects
     if (game.modules.get("fxmaster")?.active) {
       const existingEffects = ["clockweather-rain", "clockweather-snow", "clockweather-fog", 
-                               "clockweather-lightning", "clockweather-leaves", "clockweather-dust"];
+                               "clockweather-leaves", "clockweather-dust"];
       
       for (const effectId of existingEffects) {
         try {
           await canvas.scene.unsetFlag("fxmaster", `effects.${effectId}`);
-        } catch (e) {
-          // Effect might not exist
-        }
+        } catch (e) {}
       }
     }
     
-    // Clear ambient weather effects (sounds and lights)
     await this.clearAmbientWeatherEffects();
     
-    console.log("Clock & Weather | ✓ All weather effects cleared");
+    console.log("Clock & Weather | ✓ All effects cleared");
   }
 
   async clearAmbientWeatherEffects() {
     if (!canvas.scene) return;
     
-    console.log("Clock & Weather | Clearing ambient weather effects...");
-    
-    // Stop thunderstorm
     this.stopThunderstormEffect();
     
-    // Stop ambient sound
     if (game.clockweather?.ambientSound) {
       try {
         game.clockweather.ambientSound.stop();
         game.clockweather.ambientSound = null;
         console.log("Clock & Weather | ✓ Stopped ambient sound");
       } catch (error) {
-        console.warn("Clock & Weather | Could not stop ambient sound:", error);
+        console.warn("Clock & Weather | Could not stop sound:", error);
       }
     }
     
-    // Find and delete all lightning lights created by clockweather
     const weatherLights = canvas.scene.lights.filter(light => 
       light.flags?.clockweather?.isWeatherEffect === true
     );
@@ -727,40 +743,26 @@ class ClockWeatherApp extends Application {
     if (weatherLights.length > 0) {
       const lightIds = weatherLights.map(l => l.id);
       await canvas.scene.deleteEmbeddedDocuments("AmbientLight", lightIds);
-      console.log(`Clock & Weather | ✓ Removed ${lightIds.length} weather lights`);
+      console.log(`Clock & Weather | ✓ Removed ${lightIds.length} lights`);
     }
   }
 
   getWeatherEffects(weatherData) {
     const effects = [];
-    const weatherCode = weatherData.rawWeatherCode || weatherData.weatherCode;
+    const weatherCode = weatherData.rawWeatherCode || "";
     const windspeed = weatherData.windspeed;
     const windDir = weatherData.windDirection || "N";
 
-    console.log("Clock & Weather | Getting effects for weather:", weatherCode, "windspeed:", windspeed, "direction:", windDir);
-
-    // Convert wind direction to angle
-    // 0° = West to East (left to right)
-    // 90° = South to North (bottom to top)
-    // 180° = East to West (right to left)
-    // 270° = North to South (top to bottom)
     const directionAngles = {
-      "N": 270,    // Blowing from North (top to bottom)
-      "NE": 315,   // Blowing from Northeast (top-right to bottom-left)
-      "E": 0,      // Blowing from East (right to left) - wraps to 360
-      "SE": 45,    // Blowing from Southeast (bottom-right to top-left)
-      "S": 90,     // Blowing from South (bottom to top)
-      "SW": 135,   // Blowing from Southwest (bottom-left to top-right)
-      "W": 180,    // Blowing from West (left to right)
-      "NW": 225    // Blowing from Northwest (top-left to bottom-right)
+      "N": 270, "NE": 315, "E": 0, "SE": 45,
+      "S": 90, "SW": 135, "W": 180, "NW": 225
     };
     
     const windAngle = directionAngles[windDir] || 180;
 
-    // Regneffekter
+    // Rain
     if (weatherCode.includes("rain")) {
-      let density = 0.5;
-      let speed = 1.5;
+      let density = 0.5, speed = 1.5;
       
       if (weatherCode.includes("heavy")) {
         density = 0.8;
@@ -772,18 +774,13 @@ class ClockWeatherApp extends Application {
       
       effects.push({
         type: "rain",
-        options: { 
-          density: density, 
-          speed: speed, 
-          direction: windAngle 
-        }
+        options: { density, speed, direction: windAngle }
       });
     }
 
-    // Snöeffekter
+    // Snow
     if (weatherCode.includes("snow")) {
-      let density = 0.4;
-      let speed = 1.0;
+      let density = 0.4, speed = 1.0;
       
       if (weatherCode.includes("blizzard")) {
         density = 1.0;
@@ -798,61 +795,33 @@ class ClockWeatherApp extends Application {
       
       effects.push({
         type: "snow",
-        options: { 
-          density: density, 
-          speed: speed, 
-          direction: windAngle 
-        }
+        options: { density, speed, direction: windAngle }
       });
     }
 
-    // Dimma
+    // Fog
     if (weatherCode.includes("fog") || weatherCode.includes("mist")) {
       effects.push({
         type: "fog",
-        options: { 
-          density: 0.5, 
-          speed: 0.3 
-        }
+        options: { density: 0.5, speed: 0.3 }
       });
     }
 
-    // Åska - använd lightning om FXMaster har det
+    // Thunderstorm
     if (weatherCode.includes("thunder")) {
-      // FXMaster kanske inte har lightning, prova att lägga till regn med högre intensitet
       effects.push({
         type: "rain",
-        options: { 
-          density: 0.9, 
-          speed: 2.5, 
-          direction: windAngle 
-        }
+        options: { density: 0.9, speed: 2.5, direction: windAngle }
       });
-      
-      // Försök med lightning om det finns
-      // Note: Vissa versioner av FXMaster kanske inte har lightning
-      // effects.push({
-      //   type: "lightning",
-      //   options: { frequency: 5000, brightness: 0.8 }
-      // });
-    }
-
-    // Vind - löv om varmt väder
-    if (windspeed > 12 && weatherData.temp > 5) {
-      // FXMaster kanske inte har leaves, men vi kan testa
-      // effects.push({
-      //   type: "leaves",
-      //   options: { density: 0.3, speed: 1.5, direction: windAngle }
-      // });
     }
 
     return effects;
   }
 }
 
-// Registrera inställningar
+// Register settings
 Hooks.once("init", () => {
-  window.ClockWeatherApp = ClockWeatherApp;
+  console.log("Clock & Weather | Initializing v2.0.0");
   
   game.settings.register("clockweather", "currentDateTime", {
     name: "Current Date and Time",
@@ -860,6 +829,14 @@ Hooks.once("init", () => {
     config: false,
     type: Object,
     default: { date: "2014-06-14", time: "00:00" }
+  });
+
+  game.settings.register("clockweather", "fxActive", {
+    name: "Weather Effects Active State",
+    scope: "world",
+    config: false,
+    type: Boolean,
+    default: false
   });
 
   game.settings.register("clockweather", "controlAmbientLight", {
@@ -877,8 +854,7 @@ Hooks.once("init", () => {
     scope: "world",
     config: true,
     type: Boolean,
-    default: false,
-    requiresReload: false
+    default: false
   });
 
   game.settings.register("clockweather", "enableAmbientSound", {
@@ -887,8 +863,7 @@ Hooks.once("init", () => {
     scope: "world",
     config: true,
     type: Boolean,
-    default: false,
-    requiresReload: false
+    default: false
   });
 
   game.settings.register("clockweather", "soundEnvironment", {
@@ -901,8 +876,7 @@ Hooks.once("init", () => {
       "land": "CLOCKWEATHER.Settings.OnLand",
       "sea": "CLOCKWEATHER.Settings.AtSea"
     },
-    default: "land",
-    requiresReload: false
+    default: "land"
   });
 
   game.settings.register("clockweather", "weatherFile", {
@@ -913,7 +887,7 @@ Hooks.once("init", () => {
     type: String,
     filePicker: "data",
     default: "modules/clockweather/weatherdata/weather.json",
-    onChange: async value => {
+    onChange: async (value) => {
       await loadWeatherData(value);
     }
   });
@@ -940,20 +914,18 @@ Hooks.once("init", () => {
     }
   });
 
-  console.log("Clock & Weather | Module initialized");
+  console.log("Clock & Weather | Settings registered");
 });
 
-// Ladda väderdata
+// Load weather data
 async function loadWeatherData(filepath) {
   try {
-    console.log("Clock & Weather | Attempting to load weather data from:", filepath);
+    console.log("Clock & Weather | Loading weather data from:", filepath);
     
     let fullPath = filepath;
     if (!filepath.startsWith("modules/") && !filepath.startsWith("worlds/")) {
       fullPath = `modules/clockweather/weatherdata/${filepath}`;
     }
-    
-    console.log("Clock & Weather | Full path:", fullPath);
     
     const response = await fetch(fullPath);
     if (!response.ok) {
@@ -962,7 +934,7 @@ async function loadWeatherData(filepath) {
     
     const data = await response.json();
     await game.settings.set("clockweather", "weatherData", data);
-    console.log("Clock & Weather | Weather data loaded successfully from:", fullPath);
+    console.log("Clock & Weather | Weather data loaded successfully");
     ui.notifications.info(game.i18n.localize("CLOCKWEATHER.WeatherLoaded"));
   } catch (error) {
     console.error("Clock & Weather | Error loading weather data:", error);
@@ -970,7 +942,7 @@ async function loadWeatherData(filepath) {
   }
 }
 
-// Lägg till knapp i Token Controls
+// Scene control button
 Hooks.on("getSceneControlButtons", controls => {
   controls.tokens.tools.clockWeather = {
     name: "clockWeather",
@@ -979,7 +951,7 @@ Hooks.on("getSceneControlButtons", controls => {
     order: Object.keys(controls.tokens.tools).length,
     button: true,
     visible: game.user.isGM,
-    onClick: () => {
+    onChange: () => {
       const existing = foundry.applications.instances.get("clockweather-app");
       if (existing) existing.close();
       else new ClockWeatherApp().render({force: true});
@@ -987,22 +959,56 @@ Hooks.on("getSceneControlButtons", controls => {
   };
 });
 
-// Ladda väderdata när ready
+// Cleanup on scene change
+Hooks.on("canvasReady", async () => {
+  console.log("Clock & Weather | Canvas ready - checking for active effects");
+  
+  // If FX is active, reapply effects to new scene
+  if (game.settings.get("clockweather", "fxActive") && game.user.isGM) {
+    const apps = Object.values(ui.windows).filter(app => app instanceof ClockWeatherApp);
+    if (apps.length > 0) {
+      console.log("Clock & Weather | Reapplying effects to new scene");
+      await apps[0].updateFXMaster();
+    }
+  }
+});
+
+// Cleanup on world shutdown
+Hooks.on("closeGame", async () => {
+  console.log("Clock & Weather | Cleaning up on shutdown");
+  
+  if (game.clockweather?.stormActive) {
+    game.clockweather.stormActive = false;
+  }
+  
+  if (game.clockweather?.ambientSound) {
+    try {
+      game.clockweather.ambientSound.stop();
+    } catch (e) {}
+  }
+});
+
+// Ready hook
 Hooks.once("ready", async () => {
   const weatherFile = game.settings.get("clockweather", "weatherFile");
   await loadWeatherData(weatherFile);
   
-  // Log FXMaster status
   if (game.modules.get("fxmaster")?.active) {
-    console.log("Clock & Weather | FXMaster detected and active");
-    console.log("Clock & Weather | FXMASTER API:", window.FXMASTER);
+    console.log("Clock & Weather | FXMaster detected");
   }
   
-  // Applicera FXMaster om aktiverat och modulen finns
-  if (game.settings.get("clockweather", "autoFXMaster") && game.modules.get("fxmaster")?.active) {
+  // Auto-apply effects if enabled
+  if (game.settings.get("clockweather", "autoFXMaster") && 
+      game.settings.get("clockweather", "fxActive") && 
+      game.modules.get("fxmaster")?.active &&
+      game.user.isGM) {
+    console.log("Clock & Weather | Auto-applying effects");
     const app = new ClockWeatherApp();
     await app.updateFXMaster();
   }
   
-  console.log("Clock & Weather | Ready");
+  console.log("Clock & Weather | Ready (v2.0.0)");
 });
+
+// Export for use in macros
+window.ClockWeatherApp = ClockWeatherApp;
