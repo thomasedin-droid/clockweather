@@ -1,16 +1,20 @@
 {
   "id": "clockweather",
   "title": "Clock & Weather",
-  "description": "Advanced time tracking and weather system with precipitation and extreme weather",
+  "description": "Advanced time tracking and weather system with precipitation tracking, extreme weather types, and military-themed UI. Perfect for Twilight 2000 campaigns with realistic weather simulation including blizzards, ice storms, and catastrophic conditions.",
   "version": "1.3.4",
   "authors": [
     {
-      "name": "Thomas Edin"
+      "name": "Thomas Edin",
+      "url": "https://github.com/thomasedin-droid",
+      "email": "contact@example.com",
+      "discord": "thomasedin"
     }
   ],
   "compatibility": {
     "minimum": "13",
-    "verified": "13"
+    "verified": "13",
+    "maximum": "13"
   },
   "esmodules": [
     "scripts/clockweather.js"
@@ -31,17 +35,21 @@
     }
   ],
   "relationships": {
-    "requires": [
+    "optional": [
       {
         "id": "fxmaster",
         "type": "module",
-        "compatibility": {}
+        "compatibility": {
+          "minimum": "4.0.0"
+        }
       }
     ]
   },
   "url": "https://github.com/thomasedin-droid/clockweather",
   "manifest": "https://github.com/thomasedin-droid/clockweather/releases/download/1.3.4/module.json",
-  "download": "https://github.com/thomasedin-droid/clockweather/releases/download/1.3.4/clockweather.zip"
+  "download": "https://github.com/thomasedin-droid/clockweather/releases/download/1.3.4/clockweather.zip",
+  "bugs": "https://github.com/thomasedin-droid/clockweather/issues",
+  "changelog": "https://github.com/thomasedin-droid/clockweather/releases",
+  "readme": "https://github.com/thomasedin-droid/clockweather/blob/main/README.md",
+  "license": "LICENSE"
 }
-
-
