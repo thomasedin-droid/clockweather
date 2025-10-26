@@ -240,7 +240,7 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
     const type = precipitation.type || 'rain';
     
     const basePenalties = {
-      'light': 5,
+      'light': 0,
       'moderate': 15,
       'heavy': 30,
       'extreme': 50,
