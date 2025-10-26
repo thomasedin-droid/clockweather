@@ -13,7 +13,8 @@ Weather:
       - Weather conditions
       - Wind condition in text, wind speed, wind direction
       - Temperature with percepted temperature in C.
-      - Visibility in text and meter   
+      - Visibility in text and meter
+	  - Precipitation during different rain and snow conditions. The system using metric units and imperial will come up in future updates
 Controls:
   - Toggle visual and sound FX.
   - Save Date and Time,
@@ -22,18 +23,18 @@ Configure Settings:
   - Enable/disable ambient light. When this is disabled, you don't see the ambient light change when the time change.
   - Enable/disable weather effects from FXMaster.
   - Enable/disable ambient sound.
-  - Change sound environment- Land or Sea.
-  - Select weather data file.
+  - Change sound environment for Land and Sea.
+  - Select weather data file, See the installation instructions.
   - Change default altitude.
 
 
+Features in version 1.3.4
+  None
+  Slimer UI 
 
-
-Features in version 1.3.1
-
-Weather: Weather has added sound effects and wind have two modes depending on windspeed. Added lightning and sound effects for thunderstorms
-         Wether modifications depending on the environment, there is two types of environment for now: On land and at sea.
-
-Chat:    You as a GM can see and manipulate the time and weather in the window. Then you can send the time and weather info to the chat, so the players can see that information.
+Installation instructions: 
+   - For Foundry Users, because this module is not an official module you have to download it manually and install the module in your Modules Folder and reload Foundry
+   - For the most convinient use of the weather.json file, i recomend that you create a folder in your world folder called "weatherdata".
+     Put you weather.json files in there and select the file you want to use at the moment from the Configure Settings -> Clock & Weather
 
 
