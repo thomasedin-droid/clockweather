@@ -1,124 +1,180 @@
-<!-- Build 007 - Added wind direction, visibility, and FXMaster toggle -->
-
+<!-- Clock & Weather Template v1.3.3 -->
 <div class="clockweather-container">
-  <div class="clockweather-content">
-    <!-- Datum och Tid sektion - sida vid sida -->
-    <div class="clockweather-section datetime-section">
-      <div class="datetime-row">
-        <div class="datetime-col">
-          <label for="date-input">{{localize "CLOCKWEATHER.Date"}}</label>
-          {{#if isGM}}
-            <input type="date" class="date-input" value="{{date}}">
-          {{else}}
-            <div class="date-display">{{date}}</div>
-          {{/if}}
-        </div>
-        
-        <div class="datetime-col">
-          <label for="time-input">{{localize "CLOCKWEATHER.Time"}}</label>
-          {{#if isGM}}
-            <input type="time" class="time-input" value="{{time}}">
-          {{else}}
-            <div class="time-display">{{time}}</div>
-          {{/if}}
-        </div>
+  <!-- Header Section with Shift -->
+  <div class="clockweather-header">
+    <h2><i class="fas fa-cloud-sun"></i> {{localize "CLOCKWEATHER.Title"}} - Shift {{shiftNumber}} ({{time}})</h2>
+  </div>
+
+  <!-- Date & Time Controls -->
+  <div class="clockweather-datetime">
+    <div class="datetime-row">
+      <div class="form-group">
+        <label>{{localize "CLOCKWEATHER.Date"}}</label>
+        <select class="date-select" {{#unless isGM}}disabled{{/unless}}>
+          <!-- Will be populated by JavaScript -->
+        </select>
       </div>
-      
-      <div class="shift-display">
-        <span class="shift-label">{{localize "CLOCKWEATHER.CurrentShift"}}:</span>
-        <span class="shift-value">{{shift}}</span>
-      </div>
-
-      {{#if isGM}}
-        <div class="time-controls">
-          <button class="time-advance compact" data-hours="-4" title="{{localize 'CLOCKWEATHER.Backwards4h'}}">
-            <i class="fas fa-backward"></i> -4h
-          </button>
-          <button class="time-advance compact" data-hours="4" title="{{localize 'CLOCKWEATHER.Forward4h'}}">
-            <i class="fas fa-forward"></i> +4h
-          </button>
-          <button class="time-advance compact" data-hours="1" title="{{localize 'CLOCKWEATHER.Forward1h'}}">
-            <i class="fas fa-step-forward"></i> +1h
-          </button>
-        </div>
-      {{/if}}
-    </div>
-
-    <!-- Väder sektion -->
-    <div class="clockweather-section weather-section">
-      {{#if isGM}}
-        <div class="altitude-control">
-          <label for="altitude-input">
-            {{localize "CLOCKWEATHER.Altitude"}}: <span class="altitude-value">{{altitude}}m</span>
-          </label>
-          <input type="range" class="altitude-slider" value="{{altitude}}" min="0" max="3900" step="150">
-        </div>
-      {{/if}}
-      
-      <div class="weather-grid">
-        <div class="weather-item">
-          <i class="fas fa-cloud weather-icon"></i>
-          <div class="weather-content">
-            <span class="weather-label">{{localize "CLOCKWEATHER.Conditions"}}</span>
-            <span class="weather-value">{{weather.weatherCode}}</span>
-          </div>
-        </div>
-        
-        <div class="weather-item">
-          <i class="fas fa-wind weather-icon"></i>
-          <div class="weather-content">
-            <span class="weather-label">{{localize "CLOCKWEATHER.Wind"}}</span>
-            <span class="weather-value">
-              {{weather.windCode}} {{weather.windDirection}} ({{weather.windspeed}} m/s)
-            </span>
-          </div>
-        </div>
-        
-        <div class="weather-item">
-          <i class="fas fa-thermometer-half weather-icon"></i>
-          <div class="weather-content">
-            <span class="weather-label">{{localize "CLOCKWEATHER.Temperature"}}</span>
-            <span class="weather-value">{{weather.temp}}°C</span>
-          </div>
-        </div>
-        
-        <div class="weather-item">
-          <i class="fas fa-thermometer-three-quarters weather-icon"></i>
-          <div class="weather-content">
-            <span class="weather-label">{{localize "CLOCKWEATHER.FeelsLike"}}</span>
-            <span class="weather-value">{{weather.feelsLike}}°C</span>
-          </div>
-        </div>
-
-        <div class="weather-item">
-          <i class="fas fa-eye weather-icon"></i>
-          <div class="weather-content">
-            <span class="weather-label">{{localize "CLOCKWEATHER.Visibility.Visibility"}}</span>
-            <span class="weather-value">{{weather.visibilityText}} ({{weather.visibility}}m)</span>
-          </div>
-        </div>
+      <div class="form-group">
+        <label>{{localize "CLOCKWEATHER.Time"}}</label>
+        <select class="time-select" {{#unless isGM}}disabled{{/unless}}>
+          <option value="00:00">00:00 - Shift 1</option>
+          <option value="04:00">04:00 - Shift 2</option>
+          <option value="08:00">08:00 - Shift 3</option>
+          <option value="12:00">12:00 - Shift 4</option>
+          <option value="16:00">16:00 - Shift 5</option>
+          <option value="20:00">20:00 - Shift 6</option>
+        </select>
       </div>
     </div>
 
+    <!-- Time Advance Buttons (GM Only) -->
     {{#if isGM}}
-      <div class="clockweather-section button-section">
-        <button class="post-to-chat compact">
-          <i class="fas fa-comment"></i> {{localize "CLOCKWEATHER.PostToChat"}}
-        </button>
-        {{#if fxMasterEnabled}}
-          <button class="toggle-fx compact {{#if fxActive}}fx-active{{/if}}" title="{{localize 'CLOCKWEATHER.ToggleWeatherFX'}}">
-            <i class="fas fa-sparkles"></i> 
-            {{#if fxActive}}
-              {{localize "CLOCKWEATHER.FXOn"}}
-            {{else}}
-              {{localize "CLOCKWEATHER.FXOff"}}
-            {{/if}}
-          </button>
-        {{/if}}
-        <button class="save-datetime compact">
-          <i class="fas fa-save"></i> {{localize "CLOCKWEATHER.Save"}}
-        </button>
-      </div>
+    <div class="time-controls">
+      <button class="time-advance" data-hours="-4" title="{{localize 'CLOCKWEATHER.Back4Hours'}}">
+        <i class="fas fa-backward"></i> -4h
+      </button>
+      <button class="time-advance" data-hours="4" title="{{localize 'CLOCKWEATHER.Forward4Hours'}}">
+        <i class="fas fa-forward"></i> +4h
+      </button>
+      <button class="time-advance" data-hours="1" title="{{localize 'CLOCKWEATHER.Forward1Hours'}}">
+        <i class="fas fa-fast-forward"></i> +1h
+      </button>
+    </div>
     {{/if}}
   </div>
+
+  <!-- Weather Information -->
+  <div class="clockweather-weather">
+    <h3><i class="fas fa-cloud"></i> {{localize "CLOCKWEATHER.Conditions"}}</h3>
+    
+    <div class="weather-grid">
+      <!-- Weather Type & Visibility on same row -->
+      <div class="weather-item">
+        <label>{{localize "CLOCKWEATHER.WeatherType"}} : {{weather.weatherCode}} </label>
+      </div>
+
+      <div class="weather-item">
+     <!--   <label>{{localize "CLOCKWEATHER.Visibility.Visibility"}}: {{weather.visibilityText}} {{weather.visibility}}</label> -->
+      <label>{{localize "CLOCKWEATHER.Visibility.Visibility"}}: {{weather.visibility}} meter</label>
+      </div>
+
+      <!-- Temperature & Feels Like on same row -->
+      <div class="weather-item">
+        <label>{{localize "CLOCKWEATHER.Temperature"}}: {{weather.temp}}°C</label>
+      </div>
+
+      <div class="weather-item">
+        <label>{{localize "CLOCKWEATHER.FeelsLike"}}: {{weather.feelsLike}}°C</label>
+      </div>
+
+      <!-- Wind full width -->
+      <div class="weather-item weather-item-full">
+        <label>{{localize "CLOCKWEATHER.Wind"}}: {{weather.windCode}} - {{weather.windDirectionLocalized}} {{weather.windspeed}} m/s</label>
+    <!--    <div class="weather-value">
+          <i class="fas fa-wind"></i> 
+          {{weather.windCode}} - {{weather.windDirectionLocalized}} {{weather.windspeed}} m/s
+        </div> -->
+      </div>
+
+      <!-- Precipitation - compact single row -->
+      {{#if weather.precipitation}}
+      <div class="weather-item weather-item-full precipitation-warning {{weather.precipitation.intensity}}">
+        <label>
+          <i class="fas fa-exclamation-triangle"></i> 
+          {{localize "CLOCKWEATHER.Precipitation"}}
+        </label>
+        <div class="precip-compact">
+          {{#if (eq weather.precipitation.type "snow")}}
+            <i class="fas fa-snowflake"></i>
+          {{else if (eq weather.precipitation.type "ice")}}
+            <i class="fas fa-icicles"></i>
+          {{else if (eq weather.precipitation.type "hail")}}
+            <i class="fas fa-cloud-meatball"></i>
+          {{else}}
+            <i class="fas fa-cloud-rain"></i>
+          {{/if}}
+          <span class="precip-info">
+            {{localize (concat "CLOCKWEATHER.PrecipType." weather.precipitation.type)}} 
+            ({{localize (concat "CLOCKWEATHER.Intensity." weather.precipitation.intensity)}})
+            • {{weather.precipitation.rate}}{{#if (eq weather.precipitation.type "snow")}}cm/h{{else}}mm/h{{/if}}
+            • {{weather.precipitation.accumulation}}{{#if (eq weather.precipitation.type "snow")}}cm{{else}}mm{{/if}} shift
+            • -{{weather.precipitation.movementPenalty}}% movement
+          </span>
+        </div>
+      </div>
+      {{/if}}
+
+      <!-- Daily Accumulation -->
+      {{#if (or dailyAccumulation.snow dailyAccumulation.rain dailyAccumulation.ice dailyAccumulation.hail)}}
+      <div class="weather-item weather-item-full daily-accumulation">
+        <label>
+          <i class="fas fa-layer-group"></i> 
+          {{localize "CLOCKWEATHER.DailyAccumulation"}}
+         </label>
+        <div class="weather-value accumulation-inline">
+          {{#if dailyAccumulation.snow}}
+            <span class="accumulation-compact">
+              <i class="fas fa-snowflake"></i> {{dailyAccumulation.snow}}cm
+            </span>
+          {{/if}}
+          {{#if dailyAccumulation.rain}}
+            <span class="accumulation-compact">
+              <i class="fas fa-cloud-rain"></i> {{dailyAccumulation.rain}}mm
+            </span>
+          {{/if}}
+          {{#if dailyAccumulation.ice}}
+            <span class="accumulation-compact">
+              <i class="fas fa-icicles"></i> {{dailyAccumulation.ice}}mm
+            </span>
+          {{/if}}
+          {{#if dailyAccumulation.hail}}
+            <span class="accumulation-compact">
+              <i class="fas fa-cloud-meatball"></i> {{dailyAccumulation.hail}}cm
+            </span>
+          {{/if}}
+        </div>
+      </div>
+      {{/if}}
+    </div>
+  </div>
+
+  <!-- Altitude Control (GM Only) -->
+  {{#if isGM}}
+  <div class="clockweather-altitude">
+    <label>
+      <i class="fas fa-mountain"></i> 
+      {{localize "CLOCKWEATHER.Altitude"}}: 
+      <span class="altitude-value">{{altitude}}m</span>
+    </label>
+    <input type="range" class="altitude-slider" min="0" max="3900" step="150" value="{{altitude}}">
+  </div>
+  {{/if}}
+
+  <!-- Terrain Effects Status (if enabled) -->
+  {{#if terrainEffectsEnabled}}
+  <div class="clockweather-terrain">
+    <div class="terrain-status">
+      <i class="fas fa-map"></i>
+      <span>{{localize "CLOCKWEATHER.TerrainEffects"}}: </span>
+      <span class="terrain-count">{{affectedRegions}} {{localize "CLOCKWEATHER.RegionsAffected"}}</span>
+    </div>
+  </div>
+  {{/if}}
+
+<!-- Action Buttons (GM Only) -->
+{{#if isGM}}
+  <div class="clockweather-actions">
+    <button class="post-to-chat" title="{{localize 'CLOCKWEATHER.PostToChat'}}">
+   <i class="fas fa-comment"></i> {{localize "CLOCKWEATHER.PostToChat"}}
+    </button>
+
+{{#if fxMasterEnabled}}
+    <button class="toggle-fx {{#if fxActive}}fx-active{{/if}}" title="{{localize 'CLOCKWEATHER.ToggleFX'}}">
+      <i class="fas fa-{{#if fxActive}}toggle-on{{else}}toggle-off{{/if}}"></i>
+      {{#if fxActive}}FX ON{{else}}FX OFF{{/if}}
+    </button>
+{{/if}}
+
+  </div>
+{{/if}}
 </div>
