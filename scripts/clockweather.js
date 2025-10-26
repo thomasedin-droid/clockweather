@@ -1,8 +1,8 @@
-// Clock & Weather version 2.0.0 Build 001
-// Major upgrade: ApplicationV2, Foundry v13+ compatible
-// Removed all deprecated APIs
+// Clock & Weather version 1.3.3 Build 020
+// File location: scripts/clockweather.js
+// COMPLETE VERSION with all methods
 
-console.log("Clock & Weather | Script loaded (v2.0.0)");
+console.log("Clock & Weather | Script loaded");
 
 class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixin(
   foundry.applications.api.ApplicationV2
@@ -18,7 +18,7 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
         resizable: true
       },
       position: {
-        width: 500,
+        width: 450,
         height: "auto"
       }
     };
@@ -39,6 +39,12 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
     const weatherData = this.getWeatherForDateAndShift(currentDateTime.date, shiftNumber);
     const altitude = game.settings.get("clockweather", "altitude");
     const fxActive = game.settings.get("clockweather", "fxActive");
+    const dailyAccumulation = this.getDailyAccumulation();
+    
+    let affectedRegions = 0;
+    if (game.settings.get("clockweather", "enableTerrainEffects") && canvas.scene) {
+      affectedRegions = this.countAffectedRegions();
+    }
 
     return {
       date: currentDateTime.date,
@@ -49,8 +55,84 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
       altitude: altitude,
       isGM: game.user.isGM,
       fxMasterEnabled: game.modules.get("fxmaster")?.active,
-      fxActive: fxActive
+      fxActive: fxActive,
+      dailyAccumulation: dailyAccumulation,
+      affectedRegions: affectedRegions,
+      terrainEffectsEnabled: game.settings.get("clockweather", "enableTerrainEffects")
     };
+  }
+
+  countAffectedRegions() {
+    if (!canvas.scene?.regions) return 0;
+    
+    let count = 0;
+    for (const region of canvas.scene.regions) {
+      const hasMovementBehavior = region.behaviors?.some(b => 
+        b.type === "adjustDarknessLevel" || 
+        b.type === "executeMacro" ||
+        b.name?.toLowerCase().includes("movement") ||
+        b.name?.toLowerCase().includes("terrain")
+      );
+      
+      if (hasMovementBehavior) count++;
+    }
+    
+    return count;
+  }
+
+  async modifyRegionTerrain(movementPenalty) {
+    if (!game.settings.get("clockweather", "enableTerrainEffects")) return;
+    if (!game.user.isGM) return;
+    if (!canvas.scene?.regions) return;
+    
+    console.log(`Clock & Weather | Modifying region terrain, penalty: ${movementPenalty}%`);
+    
+    const modifiedRegions = [];
+    
+    for (const region of canvas.scene.regions) {
+      const hasMovementBehavior = region.behaviors?.some(b => 
+        b.type === "adjustDarknessLevel" ||
+        b.name?.toLowerCase().includes("movement") ||
+        b.name?.toLowerCase().includes("terrain")
+      );
+      
+      if (hasMovementBehavior) {
+        if (!region.flags?.clockweather?.originalSettings) {
+          await region.setFlag("clockweather", "originalSettings", {
+            behaviors: region.behaviors
+          });
+        }
+        
+        await region.setFlag("clockweather", "weatherPenalty", movementPenalty);
+        modifiedRegions.push(region.name || "Unnamed Region");
+      }
+    }
+    
+    if (modifiedRegions.length > 0) {
+      console.log(`Clock & Weather | Modified ${modifiedRegions.length} regions:`, modifiedRegions);
+      ui.notifications.info(`🗺️ ${modifiedRegions.length} region(s) affected by weather`);
+    }
+  }
+
+  async restoreRegionTerrain() {
+    if (!game.user.isGM) return;
+    if (!canvas.scene?.regions) return;
+    
+    console.log("Clock & Weather | Restoring region terrain to original state");
+    
+    let restoredCount = 0;
+    
+    for (const region of canvas.scene.regions) {
+      if (region.flags?.clockweather?.originalSettings) {
+        await region.unsetFlag("clockweather", "weatherPenalty");
+        await region.unsetFlag("clockweather", "originalSettings");
+        restoredCount++;
+      }
+    }
+    
+    if (restoredCount > 0) {
+      console.log(`Clock & Weather | Restored ${restoredCount} regions`);
+    }
   }
 
   getCurrentDateTime() {
@@ -100,7 +182,8 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
         windspeed: 0,
         temp: 0,
         feelsLike: 0,
-        visibility: 10000
+        visibility: 10000,
+        precipitation: null
       };
     }
 
@@ -115,7 +198,8 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
         windspeed: 0,
         temp: 0,
         feelsLike: 0,
-        visibility: 10000
+        visibility: 10000,
+        precipitation: null
       };
     }
 
@@ -124,6 +208,15 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
     const feelsLike = this.calculateFeelsLike(adjustedTemp, shiftData.windspeed);
     const visibility = this.calculateVisibility(shiftData.weatherCode, shiftData.windspeed);
     const windDir = shiftData.windDirection || "N";
+    
+    let precipitationData = null;
+    if (shiftData.precipitation) {
+      precipitationData = {
+        ...shiftData.precipitation,
+        movementPenalty: this.calculateMovementPenalty(shiftData.precipitation),
+        impactLevel: this.getPrecipitationImpact(shiftData.precipitation)
+      };
+    }
     
     return {
       weatherCode: game.i18n.localize(`CLOCKWEATHER.Weathertype.${shiftData.weatherCode}`) || shiftData.weatherCode,
@@ -135,8 +228,129 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
       feelsLike: feelsLike,
       visibility: visibility,
       visibilityText: this.getVisibilityText(visibility),
-      rawWeatherCode: shiftData.weatherCode
+      rawWeatherCode: shiftData.weatherCode,
+      precipitation: precipitationData
     };
+  }
+
+  calculateMovementPenalty(precipitation) {
+    if (!precipitation || !precipitation.intensity) return 0;
+    
+    const intensity = precipitation.intensity;
+    const type = precipitation.type || 'rain';
+    
+    const basePenalties = {
+      'light': 5,
+      'moderate': 15,
+      'heavy': 30,
+      'extreme': 50,
+      'catastrophic': 75
+    };
+    
+    const typeMultipliers = {
+      'rain': 1.0,
+      'snow': 1.5,
+      'ice': 2.0,
+      'hail': 1.8,
+      'sleet': 1.3,
+      'mixed': 1.4
+    };
+    
+    const basePenalty = basePenalties[intensity] || 0;
+    const multiplier = typeMultipliers[type] || 1.0;
+    
+    return Math.min(Math.round(basePenalty * multiplier), 95);
+  }
+
+  getPrecipitationImpact(precipitation) {
+    if (!precipitation || !precipitation.intensity) return 'none';
+    
+    const levels = {
+      'light': 'minimal',
+      'moderate': 'noticeable',
+      'heavy': 'significant',
+      'extreme': 'severe',
+      'catastrophic': 'catastrophic'
+    };
+    
+    return levels[precipitation.intensity] || 'none';
+  }
+
+  getDailyAccumulation() {
+    const stored = game.settings.get("clockweather", "dailyAccumulation");
+    const currentDate = this.getCurrentDateTime().date;
+    
+    if (!stored || stored.startDate !== currentDate) {
+      return {
+        snow: 0,
+        rain: 0,
+        ice: 0,
+        hail: 0,
+        startDate: currentDate
+      };
+    }
+    
+    return stored;
+  }
+
+  async updateDailyAccumulation(precipitation) {
+    if (!precipitation) return;
+    
+    const accumulation = this.getDailyAccumulation();
+    const type = precipitation.type || 'rain';
+    const amount = precipitation.accumulation || 0;
+    
+    accumulation[type] = (accumulation[type] || 0) + amount;
+    
+    await game.settings.set("clockweather", "dailyAccumulation", accumulation);
+    
+    console.log(`Clock & Weather | Updated accumulation: ${type} +${amount} (total: ${accumulation[type]})`);
+    
+    this.checkExtremeAccumulation(accumulation);
+  }
+
+  checkExtremeAccumulation(accumulation) {
+    const warnings = [];
+    
+    if (accumulation.snow > 50) {
+      warnings.push(`⚠️ Catastrophic snowfall! ${accumulation.snow.toFixed(1)}cm accumulated - Buildings at risk!`);
+    } else if (accumulation.snow > 30) {
+      warnings.push(`⚠️ Extreme snowfall! ${accumulation.snow.toFixed(1)}cm accumulated`);
+    }
+    
+    if (accumulation.rain > 100) {
+      warnings.push(`⚠️ Catastrophic flooding! ${accumulation.rain.toFixed(1)}mm rain - Severe flood risk!`);
+    } else if (accumulation.rain > 50) {
+      warnings.push(`⚠️ Flood risk! ${accumulation.rain.toFixed(1)}mm rain accumulated`);
+    }
+    
+    if (accumulation.ice > 15) {
+      warnings.push(`⚠️ Catastrophic ice accumulation! ${accumulation.ice.toFixed(1)}mm - Power lines down!`);
+    } else if (accumulation.ice > 10) {
+      warnings.push(`⚠️ Dangerous ice conditions! ${accumulation.ice.toFixed(1)}mm ice accumulated`);
+    }
+    
+    if (accumulation.hail > 20) {
+      warnings.push(`⚠️ Catastrophic hail! ${accumulation.hail.toFixed(1)}cm - Severe property damage!`);
+    } else if (accumulation.hail > 10) {
+      warnings.push(`⚠️ Severe hail storm! ${accumulation.hail.toFixed(1)}cm hail accumulated`);
+    }
+    
+    if (warnings.length > 0 && game.user.isGM) {
+      warnings.forEach(warning => ui.notifications.warn(warning));
+    }
+  }
+
+  async resetDailyAccumulation() {
+    const currentDate = this.getCurrentDateTime().date;
+    await game.settings.set("clockweather", "dailyAccumulation", {
+      snow: 0,
+      rain: 0,
+      ice: 0,
+      hail: 0,
+      startDate: currentDate
+    });
+    console.log("Clock & Weather | Daily accumulation reset");
   }
 
   calculateVisibility(weatherCode, windspeed) {
@@ -165,19 +379,58 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
         break;
       case "rain":
       case "snow":
+      case "sleet":
         baseVisibility = 1000;
         break;
       case "heavy_rain":
       case "heavy_snow":
+      case "freezing_rain":
+      case "hail":
+        baseVisibility = 500;
+        break;
       case "blizzard":
-        baseVisibility = 200;
+      case "whiteout":
+      case "ice_storm":
+      case "severe_hail":
+        baseVisibility = 100;
         break;
       case "thunderstorm":
         baseVisibility = 2000;
         break;
+      case "severe_thunderstorm":
+        baseVisibility = 1000;
+        break;
+      case "tropical_storm":
+        baseVisibility = 800;
+        break;
+      case "typhoon":
+      case "hurricane":
+        baseVisibility = 300;
+        break;
+      case "tornado":
+        baseVisibility = 150;
+        break;
+      case "sandstorm":
+      case "dust_storm":
+        baseVisibility = 200;
+        break;
+      case "dust_devil":
+        baseVisibility = 500;
+        break;
+      case "monsoon":
+        baseVisibility = 600;
+        break;
+      case "volcanic_ash":
+        baseVisibility = 300;
+        break;
+      case "acid_rain":
+        baseVisibility = 1500;
+        break;
     }
     
-    if (windspeed > 15) {
+    if (windspeed > 20) {
+      baseVisibility = Math.min(baseVisibility, baseVisibility * 0.5);
+    } else if (windspeed > 15) {
       baseVisibility = Math.min(baseVisibility, baseVisibility * 0.7);
     }
     
@@ -214,108 +467,145 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
     super._onRender(context, options);
     
     const html = this.element;
-    
-    console.log("Clock & Weather | _onRender called");
-    console.log("Clock & Weather | Element:", html);
-    
-    // Store app reference
     const app = this;
     
-    // Time advance buttons (using CLASS selector, not data-action)
+    console.log("Clock & Weather | _onRender called");
+    
+    // Populate date dropdown
+    const dateSelect = html.querySelector('.date-select');
+    if (dateSelect) {
+      this.populateDateSelect(dateSelect, context.date);
+    }
+    
+    // Set time dropdown value
+    const timeSelect = html.querySelector('.time-select');
+    if (timeSelect) {
+      timeSelect.value = this.getClosestShiftTime(context.time);
+    }
+    
     const advanceButtons = html.querySelectorAll('.time-advance');
     console.log("Clock & Weather | Found advance buttons:", advanceButtons.length);
     
     advanceButtons.forEach(btn => {
-      console.log("Clock & Weather | Attaching listener to button:", btn, "hours:", btn.dataset.hours);
       btn.addEventListener('click', async (e) => {
-        console.log("Clock & Weather | BUTTON CLICKED!");
         e.preventDefault();
         e.stopPropagation();
         const hours = parseInt(btn.dataset.hours) || 0;
-        console.log("Clock & Weather | Advance time button clicked:", hours);
+        console.log("Clock & Weather | Advance time:", hours);
         await app._advanceTime(hours);
       });
     });
     
-    // Date input (using CLASS selector)
-    const dateInput = html.querySelector('.date-input');
-    console.log("Clock & Weather | Found date input:", dateInput);
-    if (dateInput) {
-      dateInput.addEventListener('change', async (e) => {
-        console.log("Clock & Weather | Date changed:", e.target.value);
+    // Date select change
+    if (dateSelect) {
+      dateSelect.addEventListener('change', async (e) => {
         await app._changeDate(e.target.value);
       });
     }
     
-    // Time input (using CLASS selector)
-    const timeInput = html.querySelector('.time-input');
-    console.log("Clock & Weather | Found time input:", timeInput);
-    if (timeInput) {
-      timeInput.addEventListener('change', async (e) => {
-        console.log("Clock & Weather | Time changed:", e.target.value);
+    // Time select change
+    if (timeSelect) {
+      timeSelect.addEventListener('change', async (e) => {
         await app._changeTime(e.target.value);
       });
     }
     
-    // Altitude slider (using CLASS selector)
     const altitudeSlider = html.querySelector('.altitude-slider');
-    console.log("Clock & Weather | Found altitude slider:", altitudeSlider);
     if (altitudeSlider) {
-      // Real-time display update
       altitudeSlider.addEventListener('input', (e) => {
         const newAltitude = parseInt(e.target.value) || 0;
         const label = html.querySelector('.altitude-value');
         if (label) label.textContent = `${newAltitude}m`;
       });
       
-      // Save on change
       altitudeSlider.addEventListener('change', async (e) => {
         const newAltitude = parseInt(e.target.value) || 0;
-        console.log("Clock & Weather | Altitude changed:", newAltitude);
         await game.settings.set("clockweather", "altitude", newAltitude);
         app.render();
       });
     }
     
-    // Post to chat button (using CLASS selector)
     const chatBtn = html.querySelector('.post-to-chat');
-    console.log("Clock & Weather | Found chat button:", chatBtn);
     if (chatBtn) {
       chatBtn.addEventListener('click', async (e) => {
-        console.log("Clock & Weather | CHAT BUTTON CLICKED!");
         e.preventDefault();
         e.stopPropagation();
-        console.log("Clock & Weather | Post to chat clicked");
         await app._postToChat();
       });
     }
     
-    // Toggle FX button (using CLASS selector)
     const fxBtn = html.querySelector('.toggle-fx');
-    console.log("Clock & Weather | Found FX button:", fxBtn);
     if (fxBtn) {
       fxBtn.addEventListener('click', async (e) => {
-        console.log("Clock & Weather | FX BUTTON CLICKED!");
         e.preventDefault();
         e.stopPropagation();
-        console.log("Clock & Weather | Toggle FX clicked");
         await app._toggleFX();
       });
     }
     
-    // Save button (using CLASS selector)
     const saveBtn = html.querySelector('.save-datetime');
-    console.log("Clock & Weather | Found save button:", saveBtn);
     if (saveBtn) {
       saveBtn.addEventListener('click', async (e) => {
-        console.log("Clock & Weather | SAVE BUTTON CLICKED!");
         e.preventDefault();
         e.stopPropagation();
         ui.notifications.info(game.i18n.localize("CLOCKWEATHER.Saved"));
       });
     }
+  }
+
+  populateDateSelect(selectElement, currentDate) {
+    const weatherData = this.getWeatherData();
+    const dates = Object.keys(weatherData).sort();
     
-    console.log("Clock & Weather | Finished attaching listeners");
+    selectElement.innerHTML = '';
+    
+    if (dates.length === 0) {
+      const option = document.createElement('option');
+      option.value = currentDate;
+      option.textContent = currentDate;
+      selectElement.appendChild(option);
+      return;
+    }
+    
+    dates.forEach(date => {
+      const option = document.createElement('option');
+      option.value = date;
+      option.textContent = date; // Simple YYYY-MM-DD format
+      
+      if (date === currentDate) {
+        option.selected = true;
+      }
+      
+      selectElement.appendChild(option);
+    });
+  }
+
+  getClosestShiftTime(currentTime) {
+    const [hours, minutes] = currentTime.split(':').map(Number);
+    const totalMinutes = hours * 60 + minutes;
+    
+    const shiftTimes = [
+      { time: '00:00', minutes: 0 },
+      { time: '04:00', minutes: 240 },
+      { time: '08:00', minutes: 480 },
+      { time: '12:00', minutes: 720 },
+      { time: '16:00', minutes: 960 },
+      { time: '20:00', minutes: 1200 }
+    ];
+    
+    // Find closest shift
+    let closest = shiftTimes[0];
+    let minDiff = Math.abs(totalMinutes - closest.minutes);
+    
+    for (const shift of shiftTimes) {
+      const diff = Math.abs(totalMinutes - shift.minutes);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closest = shift;
+      }
+    }
+    
+    return closest.time;
   }
 
   async _advanceTime(hours) {
@@ -331,6 +621,10 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
       date.setDate(date.getDate() + Math.floor(newHours / 24));
       newDate = date.toISOString().split('T')[0];
       newHours = newHours % 24;
+      
+      if (game.settings.get("clockweather", "resetAccumulationDaily")) {
+        await this.resetDailyAccumulation();
+      }
     } else if (newHours < 0) {
       const date = new Date(current.date);
       date.setDate(date.getDate() - Math.ceil(Math.abs(newHours) / 24));
@@ -340,12 +634,27 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
 
     const newTime = `${String(newHours).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
     
-    console.log("Clock & Weather | New date/time:", newDate, newTime);
-    
     await game.settings.set("clockweather", "currentDateTime", {
       date: newDate,
       time: newTime
     });
+
+    const newShiftNumber = this.calculateShiftNumber(newTime);
+    const newWeatherData = this.getWeatherForDateAndShift(newDate, newShiftNumber);
+    
+    if (newWeatherData.precipitation && hours > 0) {
+      await this.updateDailyAccumulation(newWeatherData.precipitation);
+      
+      if (game.settings.get("clockweather", "enableTerrainEffects")) {
+        await this.modifyRegionTerrain(newWeatherData.precipitation.movementPenalty);
+      }
+      
+      if (newWeatherData.precipitation.movementPenalty >= 25 && game.user.isGM) {
+        this.postPrecipitationWarning(newWeatherData);
+      }
+    } else if (!newWeatherData.precipitation && game.settings.get("clockweather", "enableTerrainEffects")) {
+      await this.restoreRegionTerrain();
+    }
 
     this.updateAmbientLighting(newTime);
     
@@ -356,9 +665,53 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
     this.render();
   }
 
-  async _changeDate(newDate) {
-    console.log("Clock & Weather | _changeDate called with", newDate);
+  async postPrecipitationWarning(weatherData) {
+    const precipitation = weatherData.precipitation;
+    if (!precipitation) return;
     
+    const accumulation = this.getDailyAccumulation();
+    const type = precipitation.type || 'rain';
+    const unit = (type === 'snow' || type === 'hail') ? 'cm' : 'mm';
+    const totalAmount = accumulation[type] || 0;
+    
+    let icon = '🌧️';
+    if (type === 'snow') icon = '❄️';
+    if (type === 'ice') icon = '🧊';
+    if (type === 'hail') icon = '🌨️';
+    if (type === 'sleet' || type === 'mixed') icon = '🌦️';
+    
+    let intensityClass = 'moderate';
+    if (precipitation.intensity === 'extreme' || precipitation.intensity === 'catastrophic') {
+      intensityClass = 'extreme';
+    } else if (precipitation.intensity === 'heavy') {
+      intensityClass = 'heavy';
+    }
+    
+    const content = `
+      <div class="clockweather-precipitation-warning ${intensityClass}">
+        <h3>${icon} Weather Alert - ${precipitation.intensity.toUpperCase()}</h3>
+        <p><strong>Conditions:</strong> ${weatherData.weatherCode}</p>
+        <p><strong>Precipitation Type:</strong> ${precipitation.intensity} ${type}</p>
+        <hr>
+        <p><strong>Current Rate:</strong> ${precipitation.rate} ${unit}/hour</p>
+        <p><strong>Shift Accumulation:</strong> ${precipitation.accumulation} ${unit} (4 hours)</p>
+        <p><strong>Daily Total:</strong> ${totalAmount.toFixed(1)} ${unit}</p>
+        <hr>
+        <p class="impact-warning"><strong>Movement Impact:</strong> -${precipitation.movementPenalty}%</p>
+        ${this.countAffectedRegions() > 0 ? `<p><strong>Affected Regions:</strong> ${this.countAffectedRegions()}</p>` : ''}
+        ${precipitation.intensity === 'catastrophic' ? '<p class="catastrophic-warning">⚠️ CATASTROPHIC CONDITIONS - SEEK SHELTER IMMEDIATELY!</p>' : ''}
+      </div>
+    `;
+    
+    await ChatMessage.create({
+      user: game.user.id,
+      speaker: ChatMessage.getSpeaker(),
+      content: content,
+      whisper: game.users.filter(u => u.isGM).map(u => u.id)
+    });
+  }
+
+  async _changeDate(newDate) {
     const current = this.getCurrentDateTime();
     
     await game.settings.set("clockweather", "currentDateTime", {
@@ -374,8 +727,6 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
   }
 
   async _changeTime(newTime) {
-    console.log("Clock & Weather | _changeTime called with", newTime);
-    
     const current = this.getCurrentDateTime();
     
     await game.settings.set("clockweather", "currentDateTime", {
@@ -393,8 +744,6 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
   }
 
   async _toggleFX() {
-    console.log("Clock & Weather | _toggleFX called");
-    
     if (!game.modules.get("fxmaster")?.active) {
       ui.notifications.warn(game.i18n.localize("CLOCKWEATHER.FXMasterNotActive"));
       return;
@@ -402,15 +751,11 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
     
     const isActive = game.settings.get("clockweather", "fxActive");
     
-    console.log("Clock & Weather | Current FX state:", isActive);
-    
     if (isActive) {
-      console.log("Clock & Weather | Turning OFF weather effects...");
       await this.clearAllWeatherEffects();
       await game.settings.set("clockweather", "fxActive", false);
       ui.notifications.info(game.i18n.localize("CLOCKWEATHER.FXMasterDisabled"));
     } else {
-      console.log("Clock & Weather | Turning ON weather effects...");
       await this.updateFXMaster();
       await game.settings.set("clockweather", "fxActive", true);
       ui.notifications.info(game.i18n.localize("CLOCKWEATHER.FXMasterEnabled"));
@@ -420,8 +765,6 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
   }
 
   async _postToChat() {
-    console.log("Clock & Weather | _postToChat called");
-    
     const currentDateTime = this.getCurrentDateTime();
     const shiftNumber = this.calculateShiftNumber(currentDateTime.time);
     const shiftName = this.getShiftName(shiftNumber);
@@ -498,7 +841,6 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
     console.log("Clock & Weather | Current weather data:", weatherData);
 
     try {
-      // Clear existing particle effects
       const existingEffects = ["clockweather-rain", "clockweather-snow", "clockweather-fog", 
                                "clockweather-leaves", "clockweather-dust"];
       
@@ -510,7 +852,6 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
         }
       }
 
-      // Get and apply new effects
       const effects = this.getWeatherEffects(weatherData);
       console.log("Clock & Weather | Effects to apply:", effects);
 
@@ -528,7 +869,6 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
         }
       }
 
-      // Handle ambient sounds and lights
       if (game.settings.get("clockweather", "enableAmbientSound")) {
         await this.updateAmbientWeatherEffects(weatherData);
       } else {
@@ -539,11 +879,7 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
       
     } catch (error) {
       console.error("Clock & Weather | Error updating FXMaster:", error);
-      foundry.applications.api.DialogV2.prompt({
-        window: { title: "Error" },
-        content: `<p>FXMaster error: ${error.message}</p>`,
-        ok: { label: "OK" }
-      });
+      ui.notifications.error(`FXMaster error: ${error.message}`);
     }
   }
 
@@ -577,7 +913,6 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
       soundFile = "modules/clockweather/sounds/strong_wind.ogg";
     }
     
-    // Sea environment overrides
     if (environment === "sea") {
       if (windspeed > 19 || weatherCode.includes("storm") || weatherCode.includes("typhoon")) {
         soundFile = "modules/clockweather/sounds/large_waves.ogg";
@@ -588,12 +923,11 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
       }
     }
     
-    // Start ambient sound
     if (soundFile) {
       console.log(`Clock & Weather | Starting ambient sound: ${soundFile}`);
       try {
         const ambientSound = await foundry.audio.AudioHelper.play(
-          { src: soundFile, volume: 0.3, loop: true },
+          { src: soundFile, volume: 0.2, loop: true },
           true
         );
         
@@ -629,7 +963,7 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
     const BASE_ALPHA = 0.6;
     const MIN_INTERVAL = 8000;
     const MAX_INTERVAL = 30000;
-    const THUNDER_VOLUME = 0.7;
+    const THUNDER_VOLUME = 0.5;
     
     const lightningAndThunder = async () => {
       if (!game.clockweather?.stormActive) return;
@@ -760,16 +1094,24 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
     
     const windAngle = directionAngles[windDir] || 180;
 
-    // Rain
-    if (weatherCode.includes("rain")) {
+    if (weatherCode.includes("rain") || weatherCode.includes("monsoon")) {
       let density = 0.5, speed = 1.5;
       
-      if (weatherCode.includes("heavy")) {
+      if (weatherCode.includes("heavy") || weatherCode.includes("severe")) {
         density = 0.8;
-        speed = 2.0;
+        speed = 2.5;
       } else if (weatherCode.includes("light")) {
         density = 0.3;
         speed = 1.0;
+      } else if (weatherCode.includes("monsoon")) {
+        density = 0.9;
+        speed = 2.0;
+      }
+      
+      if (weatherData.precipitation?.intensity === 'extreme' || 
+          weatherData.precipitation?.intensity === 'catastrophic') {
+        density = 1.0;
+        speed = 3.0;
       }
       
       effects.push({
@@ -778,11 +1120,13 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
       });
     }
 
-    // Snow
-    if (weatherCode.includes("snow")) {
+    if (weatherCode.includes("snow") || weatherCode.includes("blizzard") || weatherCode.includes("whiteout")) {
       let density = 0.4, speed = 1.0;
       
-      if (weatherCode.includes("blizzard")) {
+      if (weatherCode.includes("whiteout")) {
+        density = 1.0;
+        speed = 3.5;
+      } else if (weatherCode.includes("blizzard")) {
         density = 1.0;
         speed = 2.5;
       } else if (weatherCode.includes("heavy")) {
@@ -799,19 +1143,35 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
       });
     }
 
-    // Fog
-    if (weatherCode.includes("fog") || weatherCode.includes("mist")) {
+    if (weatherCode.includes("fog") || weatherCode.includes("mist") || 
+        weatherCode.includes("volcanic_ash")) {
+      let density = 0.5;
+      if (weatherCode.includes("volcanic_ash")) density = 0.7;
+      
       effects.push({
         type: "fog",
-        options: { density: 0.5, speed: 0.3 }
+        options: { density, speed: 0.3 }
       });
     }
 
-    // Thunderstorm
-    if (weatherCode.includes("thunder")) {
+    if (weatherCode.includes("thunder") || weatherCode.includes("typhoon") || 
+        weatherCode.includes("hurricane") || weatherCode.includes("tornado")) {
       effects.push({
         type: "rain",
-        options: { density: 0.9, speed: 2.5, direction: windAngle }
+        options: { density: 1.0, speed: 3.0, direction: windAngle }
+      });
+    }
+
+    if (weatherCode.includes("sandstorm") || weatherCode.includes("dust")) {
+      let density = 0.6, speed = 2.0;
+      if (weatherCode.includes("dust_devil")) {
+        density = 0.4;
+        speed = 2.5;
+      }
+      
+      effects.push({
+        type: "dust",
+        options: { density, speed, direction: windAngle }
       });
     }
 
@@ -819,9 +1179,8 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
   }
 }
 
-// Register settings
 Hooks.once("init", () => {
-  console.log("Clock & Weather | Initializing v2.0.0");
+  console.log("Clock & Weather - Initializing");
   
   game.settings.register("clockweather", "currentDateTime", {
     name: "Current Date and Time",
@@ -831,12 +1190,61 @@ Hooks.once("init", () => {
     default: { date: "2014-06-14", time: "00:00" }
   });
 
+  game.settings.register("clockweather", "weatherData", {
+    name: "Weather Data Cache",
+    scope: "world",
+    config: false,
+    type: Object,
+    default: {}
+  });
+
   game.settings.register("clockweather", "fxActive", {
     name: "Weather Effects Active State",
     scope: "world",
     config: false,
     type: Boolean,
     default: false
+  });
+
+  game.settings.register("clockweather", "dailyAccumulation", {
+    name: "Daily Precipitation Accumulation",
+    scope: "world",
+    config: false,
+    type: Object,
+    default: {
+      snow: 0,
+      rain: 0,
+      ice: 0,
+      hail: 0,
+      startDate: "2014-06-14"
+    }
+  });
+
+  game.settings.register("clockweather", "weatherFile", {
+    name: "CLOCKWEATHER.Settings.WeatherFile",
+    hint: "CLOCKWEATHER.Settings.WeatherFileHint",
+    scope: "world",
+    config: true,
+    type: String,
+    filePicker: "data",
+    default: "modules/clockweather/weatherdata/weather.json",
+    onChange: async (value) => {
+      await loadWeatherData(value);
+    }
+  });
+
+  game.settings.register("clockweather", "altitude", {
+    name: "CLOCKWEATHER.Settings.Altitude",
+    hint: "CLOCKWEATHER.Settings.AltitudeHint",
+    scope: "world",
+    config: true,
+    type: Number,
+    default: 0,
+    range: {
+      min: 0,
+      max: 3900,
+      step: 150
+    }
   });
 
   game.settings.register("clockweather", "controlAmbientLight", {
@@ -879,45 +1287,28 @@ Hooks.once("init", () => {
     default: "land"
   });
 
-  game.settings.register("clockweather", "weatherFile", {
-    name: "CLOCKWEATHER.Settings.WeatherFile",
-    hint: "CLOCKWEATHER.Settings.WeatherFileHint",
+  game.settings.register("clockweather", "enableTerrainEffects", {
+    name: "CLOCKWEATHER.Settings.EnableTerrainEffects",
+    hint: "CLOCKWEATHER.Settings.EnableTerrainEffectsHint",
     scope: "world",
     config: true,
-    type: String,
-    filePicker: "data",
-    default: "modules/clockweather/weatherdata/weather.json",
-    onChange: async (value) => {
-      await loadWeatherData(value);
-    }
+    type: Boolean,
+    default: false
   });
 
-  game.settings.register("clockweather", "weatherData", {
-    name: "Weather Data Cache",
-    scope: "world",
-    config: false,
-    type: Object,
-    default: {}
-  });
-
-  game.settings.register("clockweather", "altitude", {
-    name: "CLOCKWEATHER.Settings.Altitude",
-    hint: "CLOCKWEATHER.Settings.AltitudeHint",
+  game.settings.register("clockweather", "resetAccumulationDaily", {
+    name: "CLOCKWEATHER.Settings.ResetAccumulationDaily",
+    hint: "CLOCKWEATHER.Settings.ResetAccumulationDailyHint",
     scope: "world",
     config: true,
-    type: Number,
-    default: 0,
-    range: {
-      min: 0,
-      max: 3900,
-      step: 150
-    }
+    type: Boolean,
+    default: true
   });
 
   console.log("Clock & Weather | Settings registered");
 });
 
-// Load weather data
+
 async function loadWeatherData(filepath) {
   try {
     console.log("Clock & Weather | Loading weather data from:", filepath);
@@ -935,14 +1326,12 @@ async function loadWeatherData(filepath) {
     const data = await response.json();
     await game.settings.set("clockweather", "weatherData", data);
     console.log("Clock & Weather | Weather data loaded successfully");
-    ui.notifications.info(game.i18n.localize("CLOCKWEATHER.WeatherLoaded"));
   } catch (error) {
     console.error("Clock & Weather | Error loading weather data:", error);
     ui.notifications.error(`${game.i18n.localize("CLOCKWEATHER.ErrorLoadingWeather")}: ${error.message}`);
   }
 }
 
-// Scene control button
 Hooks.on("getSceneControlButtons", controls => {
   controls.tokens.tools.clockWeather = {
     name: "clockWeather",
@@ -959,11 +1348,31 @@ Hooks.on("getSceneControlButtons", controls => {
   };
 });
 
-// Cleanup on scene change
-Hooks.on("canvasReady", async () => {
-  console.log("Clock & Weather | Canvas ready - checking for active effects");
+Hooks.once("ready", async () => {
+  console.log("Clock & Weather | Ready hook fired");
   
-  // If FX is active, reapply effects to new scene
+  const weatherFile = game.settings.get("clockweather", "weatherFile");
+  await loadWeatherData(weatherFile);
+  
+  if (game.modules.get("fxmaster")?.active) {
+    console.log("Clock & Weather | FXMaster detected and active");
+  }
+  
+  if (game.settings.get("clockweather", "autoFXMaster") && 
+      game.settings.get("clockweather", "fxActive") && 
+      game.modules.get("fxmaster")?.active &&
+      game.user.isGM) {
+    console.log("Clock & Weather | Auto-applying effects");
+    const app = new ClockWeatherApp();
+    await app.updateFXMaster();
+  }
+  
+  console.log("Clock & Weather - Ready");
+});
+
+Hooks.on("canvasReady", async () => {
+  console.log("Clock & Weather | Canvas ready");
+  
   if (game.settings.get("clockweather", "fxActive") && game.user.isGM) {
     const apps = Object.values(ui.windows).filter(app => app instanceof ClockWeatherApp);
     if (apps.length > 0) {
@@ -973,7 +1382,7 @@ Hooks.on("canvasReady", async () => {
   }
 });
 
-// Cleanup on world shutdown
+
 Hooks.on("closeGame", async () => {
   console.log("Clock & Weather | Cleaning up on shutdown");
   
@@ -984,31 +1393,14 @@ Hooks.on("closeGame", async () => {
   if (game.clockweather?.ambientSound) {
     try {
       game.clockweather.ambientSound.stop();
-    } catch (e) {}
+    } catch (e) {
+      console.warn("Clock & Weather | Could not stop ambient sound:", e);
+    }
   }
 });
 
-// Ready hook
-Hooks.once("ready", async () => {
-  const weatherFile = game.settings.get("clockweather", "weatherFile");
-  await loadWeatherData(weatherFile);
-  
-  if (game.modules.get("fxmaster")?.active) {
-    console.log("Clock & Weather | FXMaster detected");
-  }
-  
-  // Auto-apply effects if enabled
-  if (game.settings.get("clockweather", "autoFXMaster") && 
-      game.settings.get("clockweather", "fxActive") && 
-      game.modules.get("fxmaster")?.active &&
-      game.user.isGM) {
-    console.log("Clock & Weather | Auto-applying effects");
-    const app = new ClockWeatherApp();
-    await app.updateFXMaster();
-  }
-  
-  console.log("Clock & Weather | Ready (v2.0.0)");
-});
+// ============================================
+// EXPORT FOR MACROS
+// ============================================
 
-// Export for use in macros
 window.ClockWeatherApp = ClockWeatherApp;

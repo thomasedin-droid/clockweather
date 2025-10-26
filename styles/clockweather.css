@@ -1,0 +1,682 @@
+/* Clock & Weather Styles v1.3.3 - Compact Edition */
+
+.clockweather {
+  font-family: "Signika", sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.clockweather-container {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Header */
+.clockweather-header h2 {
+  margin: 0;
+  padding: 0.4rem;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.clockweather-header i {
+  margin-right: 0.4rem;
+  color: #ffd700;
+}
+
+/* Date & Time Section */
+.clockweather-datetime {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.75rem;
+  border-radius: 6px;
+  backdrop-filter: blur(10px);
+}
+
+.datetime-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.clockweather-datetime .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.clockweather-datetime label {
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.clockweather-datetime input[type="date"],
+.clockweather-datetime input[type="time"],
+.clockweather-datetime select {
+  padding: 0rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  font-size: 0.8rem;
+  font-weight: 400;
+  transition: all 0.3s ease;
+  width: 60%;
+  cursor: pointer;
+}
+
+.clockweather-datetime select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  padding-right: 1rem;
+}
+
+.clockweather-datetime input:hover:not(:disabled),
+.clockweather-datetime select:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 1);
+}
+
+.clockweather-datetime input:focus,
+.clockweather-datetime select:focus {
+  outline: none;
+  border-color: #ffd700;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
+}
+
+.clockweather-datetime input:disabled,
+.clockweather-datetime select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Time Controls */
+.time-controls {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.4rem;
+}
+
+.time-advance {
+  padding: 0.5rem 0.6rem;
+  border: none;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.time-advance:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #5fbefd 0%, #11f3ff 100%);
+}
+
+.time-advance:active {
+  transform: translateY(0);
+}
+
+.time-advance i {
+  margin-right: 0.2rem;
+}
+
+/* Current Shift */
+.clockweather-shift {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.6rem;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.shift-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+}
+
+.shift-info i {
+  color: #ffd700;
+  font-size: 1.1rem;
+}
+
+.shift-label {
+  font-weight: 500;
+}
+
+.shift-name {
+  font-weight: 700;
+  color: #ffd700;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Weather Section */
+.clockweather-weather {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.75rem;
+  border-radius: 6px;
+  backdrop-filter: blur(10px);
+}
+
+.clockweather-weather h3 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 0.4rem;
+}
+
+.weather-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.weather-item {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.6rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.weather-item-full {
+  grid-column: 1 / -1;
+}
+
+.weather-item label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.3rem;
+  opacity: 0.9;
+}
+
+.weather-value {
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.weather-value i {
+  color: #ffd700;
+  font-size: 0.95rem;
+}
+
+/* Precipitation Warning */
+.precipitation-warning {
+  background: rgba(255, 193, 7, 0.2);
+  border: 2px solid rgba(255, 193, 7, 0.5);
+}
+
+.precipitation-warning.extreme {
+  background: rgba(244, 67, 54, 0.3);
+  border: 2px solid rgba(244, 67, 54, 0.6);
+  animation: pulseWarning 2s ease-in-out infinite;
+}
+
+.precipitation-warning.heavy {
+  background: rgba(255, 152, 0, 0.25);
+  border: 2px solid rgba(255, 152, 0, 0.6);
+}
+
+@keyframes pulseWarning {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(244, 67, 54, 0);
+  }
+}
+
+.precipitation-warning label {
+  color: #ffd700;
+}
+
+.precipitation-details {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.precip-main {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.precip-main i {
+  font-size: 1.2rem;
+}
+
+.precip-type {
+  text-transform: capitalize;
+}
+
+.precip-intensity {
+  font-weight: 600;
+  opacity: 0.9;
+  font-size: 0.85rem;
+}
+
+.precip-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  width: 100%;
+  padding: 0.4rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.precip-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+}
+
+.precip-stat i {
+  width: 16px;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.warning-stat {
+  color: #ff6b6b;
+  font-weight: 700;
+  padding: 0.25rem 0.4rem;
+  background: rgba(255, 107, 107, 0.2);
+  border-radius: 3px;
+  margin-top: 0.2rem;
+}
+
+/* Daily Accumulation */
+.daily-accumulation {
+  background: rgba(33, 150, 243, 0.2);
+  border: 2px solid rgba(33, 150, 243, 0.5);
+}
+
+.accumulation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.accumulation-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.6rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.accumulation-item:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.accumulation-item i {
+  font-size: 1.4rem;
+}
+
+.accumulation-item.snow i {
+  color: #e3f2fd;
+}
+
+.accumulation-item.rain i {
+  color: #64b5f6;
+}
+
+.accumulation-item.ice i {
+  color: #b3e5fc;
+}
+
+.accumulation-item.hail i {
+  color: #f5f5f5;
+}
+
+.accumulation-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.9;
+  font-weight: 600;
+}
+
+.accumulation-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffd700;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Altitude Control */
+.clockweather-altitude {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.75rem;
+  border-radius: 6px;
+}
+
+.clockweather-altitude label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
+}
+
+.altitude-value {
+  color: #ffd700;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.altitude-slider {
+  width: 100%;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.3);
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.altitude-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffd700;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.altitude-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+}
+
+.altitude-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffd700;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.altitude-hint {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.7rem;
+  opacity: 0.8;
+  font-style: italic;
+}
+
+/* Terrain Effects */
+.clockweather-terrain {
+  background: rgba(76, 175, 80, 0.2);
+  padding: 0.6rem;
+  border-radius: 6px;
+  border: 1px solid rgba(76, 175, 80, 0.4);
+}
+
+.terrain-status {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.terrain-status i {
+  color: #4caf50;
+  font-size: 1rem;
+}
+
+.terrain-count {
+  color: #ffd700;
+  font-weight: 700;
+}
+
+/* Precipitation - Compact single line */
+.precip-compact {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+}
+
+.precip-compact i {
+  font-size: 1.1rem;
+  color: #ffd700;
+}
+
+.precip-info {
+  flex: 1;
+  line-height: 1.4;
+}
+
+/* Daily Accumulation - Inline */
+.accumulation-inline {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.accumulation-compact {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.accumulation-compact i {
+  font-size: 1rem;
+}
+
+/* Action Buttons - Single Row */
+.clockweather-actions {
+  display: grid; 
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+} 
+
+
+.clockweather-actions button {
+  padding: 0.6rem 0.8rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+}
+
+.post-to-chat {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  grid-column: 1;
+}
+
+.toggle-fx {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  color: white;
+}
+
+.toggle-fx.fx-active {
+  background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+}
+
+.toggle-fx.fx-active i {
+  color: #00ff00;
+}
+
+.save-datetime {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  color: #333;
+}
+
+.post-to-chat:hover,
+.toggle-fx:hover,
+.save-datetime:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.clockweather-actions button:active {
+  transform: translateY(0);
+}
+
+.clockweather-actions button i {
+  font-size: 0.9rem;
+}
+
+/* Chat Message Styling */
+.clockweather-chat-message {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.clockweather-chat-message h3 {
+  margin: 0 0 0.8rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+  font-size: 1.2rem;
+}
+
+.clockweather-chat-message p {
+  margin: 0.4rem 0;
+  font-size: 0.95rem;
+}
+
+.clockweather-chat-message strong {
+  color: #ffd700;
+}
+
+.clockweather-chat-message hr {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 0.8rem 0;
+}
+
+/* Precipitation Warning Chat */
+.clockweather-precipitation-warning {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 193, 7, 0.8);
+}
+
+.clockweather-precipitation-warning.heavy {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+  border: 2px solid rgba(255, 152, 0, 0.9);
+}
+
+.clockweather-precipitation-warning.extreme {
+  background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+  border: 3px solid rgba(244, 67, 54, 1);
+  animation: pulseWarning 2s ease-in-out infinite;
+}
+
+.clockweather-precipitation-warning h3 {
+  margin: 0 0 0.8rem 0;
+  font-size: 1.3rem;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.clockweather-precipitation-warning p {
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+}
+
+.clockweather-precipitation-warning hr {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  margin: 0.6rem 0;
+}
+
+.clockweather-precipitation-warning .impact-warning {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.5rem;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border-left: 4px solid #ffd700;
+}
+
+.clockweather-precipitation-warning .catastrophic-warning {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0.8rem;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 800;
+  border: 2px solid #ff0000;
+  margin-top: 0.8rem;
+  animation: pulseText 1s ease-in-out infinite;
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+}
+
+@keyframes pulseText {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
