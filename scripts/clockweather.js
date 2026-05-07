@@ -1,6 +1,6 @@
-// Clock & Weather version 1.3.3 Build 020
+// Clock & Weather version 1.4.0
 // File location: scripts/clockweather.js
-// COMPLETE VERSION with all methods
+// Updated for Foundry VTT V14 compatibility
 
 console.log("Clock & Weather | Script loaded");
 
@@ -14,7 +14,7 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
       tag: "div",
       window: {
         title: "CLOCKWEATHER.Title",
-        icon: "fas fa-cloud-sun",
+        icon: "fa-solid fa-cloud-sun",
         resizable: true
       },
       position: {
@@ -37,12 +37,14 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
     const shiftNumber = this.calculateShiftNumber(currentDateTime.time);
     const shiftName = this.getShiftName(shiftNumber);
     const weatherData = this.getWeatherForDateAndShift(currentDateTime.date, shiftNumber);
+    // Read settings once, pass to context
     const altitude = game.settings.get("clockweather", "altitude");
     const fxActive = game.settings.get("clockweather", "fxActive");
+    const terrainEffectsEnabled = game.settings.get("clockweather", "enableTerrainEffects");
     const dailyAccumulation = this.getDailyAccumulation();
     
     let affectedRegions = 0;
-    if (game.settings.get("clockweather", "enableTerrainEffects") && canvas.scene) {
+    if (terrainEffectsEnabled && canvas.scene) {
       affectedRegions = this.countAffectedRegions();
     }
 
@@ -58,7 +60,7 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
       fxActive: fxActive,
       dailyAccumulation: dailyAccumulation,
       affectedRegions: affectedRegions,
-      terrainEffectsEnabled: game.settings.get("clockweather", "enableTerrainEffects")
+      terrainEffectsEnabled: terrainEffectsEnabled
     };
   }
 
@@ -233,31 +235,28 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
     };
   }
 
+  // ============================================
+  // STATIC LOOKUP TABLES (avoid re-creation per call)
+  // ============================================
+  static BASE_PENALTIES = {
+    'light': 5, 'moderate': 15, 'heavy': 30, 'extreme': 50, 'catastrophic': 75
+  };
+
+  static TYPE_MULTIPLIERS = {
+    'rain': 1.0, 'snow': 1.5, 'ice': 2.0,
+    'hail': 1.8, 'sleet': 1.3, 'mixed': 1.4
+  };
+
+  static WIND_DIRECTION_ANGLES = {
+    "N": 270, "NE": 315, "E": 0, "SE": 45,
+    "S": 90, "SW": 135, "W": 180, "NW": 225
+  };
+
   calculateMovementPenalty(precipitation) {
-    if (!precipitation || !precipitation.intensity) return 0;
+    if (!precipitation?.intensity) return 0;
     
-    const intensity = precipitation.intensity;
-    const type = precipitation.type || 'rain';
-    
-    const basePenalties = {
-      'light': 5,
-      'moderate': 15,
-      'heavy': 30,
-      'extreme': 50,
-      'catastrophic': 75
-    };
-    
-    const typeMultipliers = {
-      'rain': 1.0,
-      'snow': 1.5,
-      'ice': 2.0,
-      'hail': 1.8,
-      'sleet': 1.3,
-      'mixed': 1.4
-    };
-    
-    const basePenalty = basePenalties[intensity] || 0;
-    const multiplier = typeMultipliers[type] || 1.0;
+    const basePenalty = ClockWeatherApp.BASE_PENALTIES[precipitation.intensity] ?? 0;
+    const multiplier = ClockWeatherApp.TYPE_MULTIPLIERS[precipitation.type ?? 'rain'] ?? 1.0;
     
     return Math.min(Math.round(basePenalty * multiplier), 95);
   }
@@ -354,84 +353,34 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
   }
 
   calculateVisibility(weatherCode, windspeed) {
-    let baseVisibility = 10000;
+    // Lookup table for base visibility (meters) per weather code
+    const VISIBILITY_MAP = {
+      "clear_sky": 10000, "clear": 10000, "fair": 10000,
+      "partly_cloudy": 8000, "cloudy": 8000,
+      "overcast": 6000,
+      "fog": 200, "mist": 200,
+      "light_rain": 4000, "light_snow": 4000,
+      "rain": 1000, "snow": 1000, "sleet": 1000,
+      "heavy_rain": 500, "heavy_snow": 500, "freezing_rain": 500, "hail": 500,
+      "blizzard": 100, "whiteout": 100, "ice_storm": 100, "severe_hail": 100,
+      "thunderstorm": 2000,
+      "severe_thunderstorm": 1000,
+      "tropical_storm": 800,
+      "typhoon": 300, "hurricane": 300,
+      "tornado": 150,
+      "sandstorm": 200, "dust_storm": 200,
+      "dust_devil": 500,
+      "monsoon": 600,
+      "volcanic_ash": 300,
+      "acid_rain": 1500
+    };
     
-    switch(weatherCode) {
-      case "clear_sky":
-      case "clear":
-      case "fair":
-        baseVisibility = 10000;
-        break;
-      case "partly_cloudy":
-      case "cloudy":
-        baseVisibility = 8000;
-        break;
-      case "overcast":
-        baseVisibility = 6000;
-        break;
-      case "fog":
-      case "mist":
-        baseVisibility = 200;
-        break;
-      case "light_rain":
-      case "light_snow":
-        baseVisibility = 4000;
-        break;
-      case "rain":
-      case "snow":
-      case "sleet":
-        baseVisibility = 1000;
-        break;
-      case "heavy_rain":
-      case "heavy_snow":
-      case "freezing_rain":
-      case "hail":
-        baseVisibility = 500;
-        break;
-      case "blizzard":
-      case "whiteout":
-      case "ice_storm":
-      case "severe_hail":
-        baseVisibility = 100;
-        break;
-      case "thunderstorm":
-        baseVisibility = 2000;
-        break;
-      case "severe_thunderstorm":
-        baseVisibility = 1000;
-        break;
-      case "tropical_storm":
-        baseVisibility = 800;
-        break;
-      case "typhoon":
-      case "hurricane":
-        baseVisibility = 300;
-        break;
-      case "tornado":
-        baseVisibility = 150;
-        break;
-      case "sandstorm":
-      case "dust_storm":
-        baseVisibility = 200;
-        break;
-      case "dust_devil":
-        baseVisibility = 500;
-        break;
-      case "monsoon":
-        baseVisibility = 600;
-        break;
-      case "volcanic_ash":
-        baseVisibility = 300;
-        break;
-      case "acid_rain":
-        baseVisibility = 1500;
-        break;
-    }
+    let baseVisibility = VISIBILITY_MAP[weatherCode] ?? 10000;
     
     if (windspeed > 20) {
-      baseVisibility = Math.min(baseVisibility, baseVisibility * 0.5);
+      baseVisibility *= 0.5;
     } else if (windspeed > 15) {
-      baseVisibility = Math.min(baseVisibility, baseVisibility * 0.7);
+      baseVisibility *= 0.7;
     }
     
     return Math.round(baseVisibility);
@@ -687,6 +636,8 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
       intensityClass = 'heavy';
     }
     
+    const regionCount = this.countAffectedRegions();
+    
     const content = `
       <div class="clockweather-precipitation-warning ${intensityClass}">
         <h3>${icon} Weather Alert - ${precipitation.intensity.toUpperCase()}</h3>
@@ -698,7 +649,7 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
         <p><strong>Daily Total:</strong> ${totalAmount.toFixed(1)} ${unit}</p>
         <hr>
         <p class="impact-warning"><strong>Movement Impact:</strong> -${precipitation.movementPenalty}%</p>
-        ${this.countAffectedRegions() > 0 ? `<p><strong>Affected Regions:</strong> ${this.countAffectedRegions()}</p>` : ''}
+        ${regionCount > 0 ? `<p><strong>Affected Regions:</strong> ${regionCount}</p>` : ''}
         ${precipitation.intensity === 'catastrophic' ? '<p class="catastrophic-warning">⚠️ CATASTROPHIC CONDITIONS - SEEK SHELTER IMMEDIATELY!</p>' : ''}
       </div>
     `;
@@ -996,7 +947,9 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
           }
         }]);
         
-        const light = canvas.lighting.get(lightDoc.id);
+        // V14: retrieve the placeable via the layer's objects map
+        const light = canvas.lighting.objects.get(lightDoc.id);
+        if (!light) throw new Error("Could not find created light placeable");
         
         const flashes = Math.floor(2 + Math.random() * 2);
         for (let i = 0; i < flashes; i++) {
@@ -1011,7 +964,7 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
         foundry.audio.AudioHelper.play({ src: thunderFile, volume: THUNDER_VOLUME, loop: false }, true);
         
         await new Promise(r => setTimeout(r, 2000 + Math.random() * 1000));
-        await canvas.scene.deleteEmbeddedDocuments("AmbientLight", [light.id]);
+        await canvas.scene.deleteEmbeddedDocuments("AmbientLight", [lightDoc.id]);
         
       } catch (error) {
         console.error("Clock & Weather | Error creating lightning:", error);
@@ -1070,7 +1023,8 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
       }
     }
     
-    const weatherLights = canvas.scene.lights.filter(light => 
+    // V14: use the embedded document collection to filter lights
+    const weatherLights = canvas.scene.getEmbeddedCollection("AmbientLight").filter(light => 
       light.flags?.clockweather?.isWeatherEffect === true
     );
     
@@ -1086,13 +1040,8 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
     const weatherCode = weatherData.rawWeatherCode || "";
     const windspeed = weatherData.windspeed;
     const windDir = weatherData.windDirection || "N";
-
-    const directionAngles = {
-      "N": 270, "NE": 315, "E": 0, "SE": 45,
-      "S": 90, "SW": 135, "W": 180, "NW": 225
-    };
     
-    const windAngle = directionAngles[windDir] || 180;
+    const windAngle = ClockWeatherApp.WIND_DIRECTION_ANGLES[windDir] ?? 180;
 
     if (weatherCode.includes("rain") || weatherCode.includes("monsoon")) {
       let density = 0.5, speed = 1.5;
@@ -1336,7 +1285,7 @@ Hooks.on("getSceneControlButtons", controls => {
   controls.tokens.tools.clockWeather = {
     name: "clockWeather",
     title: game.i18n.localize("CLOCKWEATHER.Title"),
-    icon: "fas fa-cloud-sun",
+    icon: "fa-solid fa-cloud-sun",
     order: Object.keys(controls.tokens.tools).length,
     button: true,
     visible: game.user.isGM,
@@ -1374,10 +1323,11 @@ Hooks.on("canvasReady", async () => {
   console.log("Clock & Weather | Canvas ready");
   
   if (game.settings.get("clockweather", "fxActive") && game.user.isGM) {
-    const apps = Object.values(ui.windows).filter(app => app instanceof ClockWeatherApp);
-    if (apps.length > 0) {
+    // V14: use foundry.applications.instances instead of deprecated ui.windows
+    const app = foundry.applications.instances.get("clockweather-app");
+    if (app instanceof ClockWeatherApp) {
       console.log("Clock & Weather | Reapplying effects to new scene");
-      await apps[0].updateFXMaster();
+      await app.updateFXMaster();
     }
   }
 });
