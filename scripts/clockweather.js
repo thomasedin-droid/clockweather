@@ -750,21 +750,39 @@ class ClockWeatherApp extends foundry.applications.api.HandlebarsApplicationMixi
     if (!game.user.isGM) return;
     if (!canvas.scene) return;
 
-    const [hours] = time.split(':').map(Number);
-    
-    let darkness = 0;
-    
-    if (hours >= 22 || hours < 4) {
+    const [hours, minutes] = time.split(':').map(Number);
+    const totalMinutes = hours * 60 + (minutes || 0);
+
+    // Calculate darkness with smooth gradients between day/night transitions
+    let darkness;
+
+    if (totalMinutes >= 1320 || totalMinutes < 240) {
+      // 22:00-04:00 - full night
       darkness = 1.0;
-    } else if (hours >= 4 && hours < 6) {
-      darkness = 0.7;
-    } else if (hours >= 6 && hours < 18) {
+    } else if (totalMinutes >= 240 && totalMinutes < 360) {
+      // 04:00-06:00 - dawn, gradually brightening
+      darkness = 0.7 - ((totalMinutes - 240) / 120) * 0.7;
+    } else if (totalMinutes >= 360 && totalMinutes < 1080) {
+      // 06:00-18:00 - daytime
       darkness = 0.0;
-    } else if (hours >= 18 && hours < 22) {
-      darkness = 0.5;
+    } else if (totalMinutes >= 1080 && totalMinutes < 1200) {
+      // 18:00-20:00 - sunset, gradually darkening
+      darkness = (totalMinutes - 1080) / 120 * 0.5;
+    } else {
+      // 20:00-22:00 - dusk to night
+      darkness = 0.5 + ((totalMinutes - 1200) / 120) * 0.5;
     }
 
-    canvas.scene.update({ darkness: darkness });
+    darkness = Math.max(0, Math.min(1, Math.round(darkness * 100) / 100));
+
+    // V14: Scene#darkness was removed - must use environment.darknessLevel
+    const updateData = { "environment.darknessLevel": darkness };
+
+    canvas.scene.update(updateData).catch(err =>
+      console.error("Clock & Weather | Failed to update scene darkness:", err)
+    );
+
+    console.log("Clock & Weather | Ambient light updated - time: " + time + ", darknessLevel: " + darkness);
   }
 
   async updateFXMaster() {
