@@ -2,7 +2,7 @@
   "id": "clockweather",
   "title": "Clock & Weather",
   "description": "<p>Advanced time tracking and weather system with precipitation and extreme weather</p>",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "authors": [
     {
       "name": "Thomas Edin",
